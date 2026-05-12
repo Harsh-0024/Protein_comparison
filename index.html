@@ -4,88 +4,290 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protein Per Rupee — Value Tracker</title>
- 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #f7f6f2;
+    --bg: #f4f3ee;
     --surface: #ffffff;
-    --surface2: #f0efe9;
-    --border: rgba(0,0,0,0.1);
-    --border2: rgba(0,0,0,0.18);
-    --text: #1a1a18;
-    --text2: #5a5a56;
-    --text3: #9a9a94;
-    --green: #1D9E75; --green-bg: #E1F5EE; --green-txt: #085041;
-    --amber: #EF9F27; --amber-bg: #FAEEDA; --amber-txt: #633806;
-    --red: #D85A30;   --red-bg: #FAECE7;   --red-txt: #4A1B0C;
-    --info-bg: #E6F1FB; --info-txt: #185FA5;
-    --success-bg: #EAF3DE; --success-txt: #3B6D11;
-    --radius: 8px; --radius-lg: 12px;
+    --surface2: #eeede7;
+    --surface3: #e6e4dc;
+    --border: rgba(0,0,0,0.09);
+    --border2: rgba(0,0,0,0.16);
+    --text: #18180f;
+    --text2: #555550;
+    --text3: #999990;
+    --green: #1a8c62; --green-bg: #daf3ea; --green-txt: #0b4a34;
+    --amber: #c97f10; --amber-bg: #fcefd3; --amber-txt: #5a3504;
+    --red: #c0442a;   --red-bg: #fbe8e3;   --red-txt: #4a1508;
+    --blue: #1868c4;  --blue-bg: #ddeaf9;  --blue-txt: #0a3570;
+    --purple: #7140c8; --purple-bg: #ede6fa; --purple-txt: #31186a;
+    --radius: 8px; --radius-lg: 14px;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Outfit', sans-serif;
+    --display: 'Syne', sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #181816; --surface: #232320; --surface2: #2c2c28;
-      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.18);
-      --text: #f0efe9; --text2: #a8a8a0; --text3: #606058;
-      --green-bg: #04342C; --green-txt: #9FE1CB;
-      --amber-bg: #412402; --amber-txt: #FAC775;
-      --red-bg: #4A1B0C; --red-txt: #F5C4B3;
-      --info-bg: #042C53; --info-txt: #85B7EB;
-      --success-bg: #173404; --success-txt: #C0DD97;
+      --bg: #13130e; --surface: #1c1c16; --surface2: #242419; --surface3: #2c2c20;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.16);
+      --text: #eeede3; --text2: #9c9b8f; --text3: #55554c;
+      --green-bg: #0c3326; --green-txt: #7ddfb8;
+      --amber-bg: #3a2203; --amber-txt: #f5c068;
+      --red-bg: #3e1508; --red-txt: #f0a48d;
+      --blue-bg: #0b2650; --blue-txt: #7ab2f5;
+      --purple-bg: #24144e; --purple-txt: #c4a8f8;
     }
   }
-  body { background: var(--bg); color: var(--text); font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.6; padding: 24px 16px; min-height: 100vh; }
-  .container { max-width: 860px; margin: 0 auto; }
-  header { margin-bottom: 28px; }
-  header h1 { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
-  header p { font-size: 13px; color: var(--text2); margin-top: 4px; }
-  .formula-box { background: var(--surface); border-left: 3px solid var(--info-txt); padding: 10px 16px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 20px; font-size: 12px; color: var(--text2); line-height: 1.9; border-top: 0.5px solid var(--border); border-right: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); }
-  .formula-box strong { color: var(--text); font-size: 13px; }
-  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 22px; }
-  .stat-card { background: var(--surface); border-radius: var(--radius); padding: 12px 16px; border: 0.5px solid var(--border); }
-  .stat-card.highlight { border-color: var(--green); }
-  .stat-label { font-size: 11px; color: var(--text3); margin-bottom: 3px; text-transform: lowercase; }
-  .stat-val { font-size: 14px; font-weight: 600; color: var(--text); }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 32px 18px 48px;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 1020px; margin: 0 auto; }
+
+  /* Header */
+  header { margin-bottom: 32px; }
+  .header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+  }
+  .header-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+  header h1 {
+    font-family: var(--display);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+  }
+  header h1 span { color: var(--green); }
+  header p { font-size: 13px; color: var(--text2); margin-top: 6px; max-width: 560px; }
+  .page-link {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+    margin-top: 2px;
+    min-width: 190px;
+    padding: 10px 12px;
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text2);
+    text-decoration: none;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.04);
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+  .page-link::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--purple);
+    box-shadow: 0 0 0 3px var(--purple-bg);
+  }
+  .page-link::after {
+    content: '→';
+    color: var(--purple);
+    font-family: var(--mono);
+    font-size: 15px;
+    transition: transform 0.15s;
+  }
+  .page-link-kicker {
+    display: block;
+    margin-bottom: 1px;
+    color: var(--text3);
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .page-link-title {
+    display: block;
+    color: var(--text);
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.1px;
+  }
+  .page-link:hover {
+    background: var(--surface2);
+    border-color: var(--purple);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.07);
+    transform: translateY(-1px);
+  }
+  .page-link:hover::after { transform: translateX(2px); }
+
+  /* Formula pill */
+  .formula-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface); border: 0.5px solid var(--border2);
+    border-radius: 100px; padding: 5px 12px;
+    font-size: 11.5px; color: var(--text2); font-family: var(--sans);
+  }
+  .pill .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .pill code { font-family: var(--mono); font-size: 11px; color: var(--text); background: var(--surface2); padding: 1px 5px; border-radius: 3px; }
+
+  /* Stat cards */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 24px; }
+  .stat-card {
+    background: var(--surface); border-radius: var(--radius-lg);
+    padding: 14px 16px; border: 0.5px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .stat-card.top { border-color: var(--green); }
+  .stat-card.top::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--green);
+  }
+  .stat-label { font-size: 10px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.8px; font-family: var(--display); font-weight: 500; }
+  .stat-val { font-size: 15px; font-weight: 600; color: var(--text); font-family: var(--display); }
   .stat-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
-  .sort-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-  .stab { font-size: 12px; padding: 5px 13px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: all 0.15s; }
-  .stab:hover { background: var(--surface2); }
-  .stab.active { background: var(--info-bg); color: var(--info-txt); border-color: transparent; font-weight: 500; }
-  .table-wrap { background: var(--surface); border-radius: var(--radius-lg); border: 0.5px solid var(--border); overflow: hidden; overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 620px; }
-  thead th { font-size: 11px; font-weight: 500; color: var(--text3); text-align: left; padding: 10px 12px; border-bottom: 0.5px solid var(--border); background: var(--surface2); cursor: pointer; user-select: none; white-space: nowrap; }
+
+  /* Sort tabs */
+  .sort-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+  .sort-label { font-size: 11px; color: var(--text3); font-family: var(--mono); margin-right: 4px; }
+  .stab {
+    font-size: 11.5px; padding: 5px 12px; border-radius: var(--radius);
+    border: 0.5px solid var(--border2); background: transparent;
+    color: var(--text2); cursor: pointer; transition: all 0.15s;
+    font-family: var(--sans);
+  }
+  .stab:hover { background: var(--surface2); color: var(--text); }
+  .stab.active { background: var(--text); color: var(--bg); border-color: transparent; font-weight: 500; }
+
+  /* Table */
+  .table-wrap {
+    background: var(--surface); border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border); overflow: hidden; overflow-x: auto;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 780px; }
+  thead th {
+    font-size: 10.5px; font-weight: 600; color: var(--text3); text-align: left;
+    padding: 11px 14px; border-bottom: 0.5px solid var(--border);
+    background: var(--surface2); cursor: pointer; user-select: none;
+    white-space: nowrap; font-family: var(--display); letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
   thead th:hover { color: var(--text); }
-  tbody td { padding: 11px 12px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
+  thead th.active-sort { color: var(--text); }
+  tbody td { padding: 12px 14px; border-bottom: 0.5px solid var(--border); vertical-align: top; }
   tbody tr:last-child td { border-bottom: none; }
   tbody tr:hover td { background: var(--surface2); }
-  .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; }
-  .bar-wrap { display: inline-block; vertical-align: middle; background: var(--surface2); border-radius: 3px; height: 5px; width: 72px; overflow: hidden; margin-left: 6px; }
-  .bar-fill { height: 100%; border-radius: 3px; }
-  .winner { display: inline-block; font-size: 9px; font-weight: 600; padding: 1px 5px; border-radius: 3px; margin-left: 5px; background: var(--success-bg); color: var(--success-txt); vertical-align: middle; text-transform: uppercase; letter-spacing: 0.3px; }
-  .prod-name { font-weight: 500; color: var(--text); font-size: 12px; }
-  .prod-src { font-size: 10px; color: var(--text3); font-weight: 400; margin-top: 1px; }
-  .note { font-size: 11px; color: var(--text3); margin-top: 16px; line-height: 1.7; padding: 12px 0 0; border-top: 0.5px solid var(--border); }
-  .legend { display: flex; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+
+  /* Product cell */
+  .prod-name { font-weight: 600; color: var(--text); font-size: 13px; font-family: var(--display); letter-spacing: -0.1px; }
+  .prod-src { font-size: 10.5px; color: var(--text3); margin-top: 2px; }
+  .rank-chip {
+    display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 6px;
+    border-radius: 3px; margin-left: 6px; background: var(--green-bg); color: var(--green-txt);
+    vertical-align: middle; text-transform: uppercase; letter-spacing: 0.4px;
+    font-family: var(--mono);
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-block; font-size: 11.5px; font-weight: 500; padding: 3px 9px;
+    border-radius: 5px; font-family: var(--mono); letter-spacing: -0.2px;
+  }
+  .badge-lg { font-size: 13px; font-weight: 600; padding: 4px 10px; }
+
+  /* Bar */
+  .bar-wrap {
+    display: block; background: var(--surface3); border-radius: 3px;
+    height: 4px; width: 68px; overflow: hidden; margin-top: 5px;
+  }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+
+  /* Quality cell */
+  .quality-score { font-family: var(--mono); font-size: 14px; font-weight: 600; }
+  .quality-note { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+  /* Other nutrients cell */
+  .nutrient-score { font-family: var(--mono); font-size: 14px; font-weight: 600; }
+  .nutrient-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+  .ntag {
+    font-size: 9.5px; padding: 1px 5px; border-radius: 3px;
+    background: var(--surface2); color: var(--text3); font-family: var(--sans);
+    border: 0.5px solid var(--border);
+  }
+
+  /* Cal/protein cell */
+  .cal-num { font-family: var(--mono); font-size: 13.5px; font-weight: 600; }
+  .cal-note { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+  /* Suggestion cell */
+  .sug-score { font-family: var(--mono); font-size: 16px; font-weight: 600; line-height: 1; }
+  .sug-denom { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+  .sug-note { font-size: 11px; color: var(--text2); margin-top: 5px; line-height: 1.5; max-width: 260px; }
+  .stars { font-size: 11px; margin-top: 3px; letter-spacing: 1px; }
+
+  /* Legend */
+  .legend { display: flex; gap: 16px; margin-top: 18px; flex-wrap: wrap; }
   .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
-  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
-  footer { margin-top: 28px; font-size: 11px; color: var(--text3); text-align: center; padding-top: 16px; border-top: 0.5px solid var(--border); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+  /* Note */
+  .note-box {
+    background: var(--surface); border-radius: var(--radius); border: 0.5px solid var(--border);
+    padding: 12px 16px; margin-top: 18px; font-size: 11.5px; color: var(--text2); line-height: 1.8;
+  }
+  .note-box strong { color: var(--text); font-weight: 600; }
+
+  footer { margin-top: 28px; font-size: 11px; color: var(--text3); text-align: center; padding-top: 16px; border-top: 0.5px solid var(--border); font-family: var(--mono); }
+
+  @media (max-width: 640px) {
+    .header-row { flex-direction: column; gap: 14px; }
+    .page-link { align-self: flex-start; }
+  }
 </style>
 </head>
 <body>
 <div class="container">
+
   <header>
-    <h1>Protein Per Rupee — Value Tracker</h1>
-    <p>Real protein value considering quantity, quality (PDCAAS) and bioavailability (BV)</p>
+    <div class="header-row">
+      <div>
+        <div class="header-eyebrow">Protein Value Analysis · India</div>
+        <h1>Protein <span>Per Rupee</span><br>Value Tracker</h1>
+        <p>Real protein value considering quantity, quality, bioavailability, other nutrients, and calorie efficiency.</p>
+      </div>
+      <a class="page-link" href="blend_comparison.html" aria-label="Open protein blend comparison page">
+        <span>
+          <span class="page-link-kicker">Also available</span>
+          <span class="page-link-title">Open Blend Matrix</span>
+        </span>
+      </a>
+    </div>
   </header>
 
-  <div class="formula-box">
-    <strong>Effective g/₹</strong> = Raw g/₹ &times; PDCAAS &times; (BV &divide; 100)<br>
-    <span style="font-size:11px;">PDCAAS checks amino acid completeness → BV checks how much absorbed protein your body actually retains. Both stages matter.</span>
+  <div class="formula-row">
+    <div class="pill"><div class="dot" style="background:var(--green)"></div>Quality % <code>= PDCAAS × BV</code></div>
+    <div class="pill"><div class="dot" style="background:var(--blue)"></div>Cal/Protein <code>= kcal ÷ g protein</code> (lower = leaner)</div>
+    <div class="pill"><div class="dot" style="background:var(--purple)"></div>Other Nutrients <code>rated /10</code> on micronutrient richness</div>
   </div>
 
   <div class="stat-row" id="stat-row"></div>
-
   <div class="sort-tabs" id="sort-tabs"></div>
 
   <div class="table-wrap">
@@ -93,117 +295,235 @@
   </div>
 
   <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:#1D9E75;"></div>High value</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#EF9F27;"></div>Medium value</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#D85A30;"></div>Low value</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>High value</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Medium value</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Low value</div>
   </div>
 
-  <p class="note">
-    * <strong>PDCAAS (0–1)</strong>: amino acid completeness × digestibility &nbsp;|&nbsp;
-    <strong>BV</strong>: % of absorbed protein retained by body &nbsp;|&nbsp;
-    Whey BV &gt;100 because benchmarked against egg (BV = 100) &nbsp;|&nbsp;
-    Effective g/₹ = Raw g/₹ × PDCAAS × (BV/100)
-  </p>
+  <div class="note-box">
+    <strong>Quality %</strong> = PDCAAS (amino acid completeness × digestibility) × BV (% retained by body). Whey exceeds 100% because BV is benchmarked against egg (BV = 100). &nbsp;|&nbsp;
+    <strong>Cal/Protein</strong>: lower means leaner protein (less caloric baggage per gram). &nbsp;|&nbsp;
+    <strong>Other Nutrients</strong>: expert score 0–10 based on micronutrient density, fibre, healthy fats, and phytonutrients beyond protein itself.
+  </div>
 
-  <footer>Made for Harsh &nbsp;·&nbsp; Protein value analysis &nbsp;·&nbsp; Sort by any column above</footer>
+  <footer>Made for Harsh &nbsp;·&nbsp; Nutritional data sourced from product labels &amp; USDA/NIN databases &nbsp;·&nbsp; Click column headers to sort</footer>
 </div>
 
 <script>
 const products = [
-  { name: "Yogabar HP Oats",      pack: "1 kg",   price: 300,  protein: 260, gPerRs: 0.87, pdcaas: 0.57, bv: 60,  source: "oat + pea" },
-  { name: "Amul Protein Lassi",   pack: "1 pack", price: 25,   protein: 20,  gPerRs: 0.80, pdcaas: 1.0,  bv: 85,  source: "dairy" },
-  { name: "ATOM Roti Protein",    pack: "500 g",  price: 608,  protein: 416, gPerRs: 0.68, pdcaas: 0.90, bv: 74,  source: "pea + soy + rice" },
-  { name: "Pintola PB 37%",       pack: "1 kg",   price: 620,  protein: 370, gPerRs: 0.60, pdcaas: 0.52, bv: 55,  source: "peanut" },
-  { name: "MuscleBlaze Raw Whey", pack: "1 kg",   price: 2299, protein: 800, gPerRs: 0.35, pdcaas: 1.0,  bv: 104, source: "whey concentrate" },
-  { name: "ATOM Whey Café Latte", pack: "1 kg",   price: 2599, protein: 810, gPerRs: 0.31, pdcaas: 1.0,  bv: 104, source: "whey concentrate" },
+  {
+    name: "Yogabar HP Oats",
+    source: "oat + pea protein",
+    gPerRs: 0.87,
+    pdcaas: 0.57, bv: 60,
+    otherScore: 8.2,
+    otherTags: ["β-glucan", "Fibre 8g", "Iron", "Mg", "B-vits"],
+    otherNote: "Whole-grain oats deliver heart-healthy beta-glucan, strong mineral profile.",
+    calPerProt: 14.2,
+    calNote: "370 kcal / 26g per 100g",
+    sugScore: 7.5,
+    sugStars: "★★★★",
+    sugNote: "Best wholefood pick — oat beta-glucan is a real bonus. Protein quality modest; pair with a dairy source for completeness."
+  },
+  {
+    name: "Amul Protein Lassi",
+    source: "dairy (cultured milk)",
+    gPerRs: 0.80,
+    pdcaas: 1.0, bv: 85,
+    otherScore: 7.8,
+    otherTags: ["Calcium 280mg", "Probiotics", "B12", "Riboflavin", "Phosphorus"],
+    otherNote: "Live cultures add gut health benefits; excellent bone-support mineral profile.",
+    calPerProt: 7.5,
+    calNote: "~150 kcal / 20g per 200 ml pack",
+    sugScore: 8.0,
+    sugStars: "★★★★",
+    sugNote: "Rare combo of top-quality dairy protein + probiotics + calcium in a grab-and-go pack. Outstanding on-the-go option."
+  },
+  {
+    name: "ATOM Roti Protein",
+    source: "pea + soy + rice blend",
+    gPerRs: 0.68,
+    pdcaas: 0.90, bv: 74,
+    otherScore: 5.0,
+    otherTags: ["Some iron", "B-vits (soy)", "Low fibre"],
+    otherNote: "Mostly isolated concentrates — decent protein quality but limited whole-food micronutrients.",
+    calPerProt: 4.6,
+    calNote: "~383 kcal / 83g per 100g",
+    sugScore: 7.5,
+    sugStars: "★★★★",
+    sugNote: "Clever for Indian meals — boosts roti/dough seamlessly. Good amino acid profile but micronutrient-thin; complement with whole foods."
+  },
+  {
+    name: "Pintola PB 37%",
+    source: "peanut (high-protein)",
+    gPerRs: 0.60,
+    pdcaas: 0.52, bv: 55,
+    otherScore: 8.5,
+    otherTags: ["MUFA/PUFA fats", "Vit E", "Mg", "Potassium", "Niacin", "Fibre 5g"],
+    otherNote: "Outstanding fat profile (oleic + linoleic acids), rich in antioxidant Vitamin E and heart-healthy minerals.",
+    calPerProt: 15.9,
+    calNote: "~590 kcal / 37g per 100g",
+    sugScore: 6.5,
+    sugStars: "★★★",
+    sugNote: "Excellent fat + micronutrient profile, but high caloric cost per protein gram. Best used as a complement, not a primary source."
+  },
+  {
+    name: "MuscleBlaze Raw Whey",
+    source: "whey concentrate",
+    gPerRs: 0.35,
+    pdcaas: 1.0, bv: 104,
+    otherScore: 5.5,
+    otherTags: ["Calcium 150mg", "Immunoglobulins", "Lactoferrin", "BCAAs"],
+    otherNote: "Biologically active whey fractions (immunoglobulins, lactoferrin) add immune-support value beyond basic protein.",
+    calPerProt: 4.7,
+    calNote: "~117 kcal / 25g per 30g serving",
+    sugScore: 9.0,
+    sugStars: "★★★★★",
+    sugNote: "Gold standard: highest quality score (PDCAAS + BV), leanest kcal per gram, clean label. Best choice for muscle protein synthesis per rupee."
+  },
+  {
+    name: "ATOM Whey Café Latte",
+    source: "whey concentrate + flavour",
+    gPerRs: 0.31,
+    pdcaas: 1.0, bv: 104,
+    otherScore: 3.5,
+    otherTags: ["Added sugar", "Artificial flavour", "Sucralose"],
+    otherNote: "Same whey base but added flavouring agents and sweeteners reduce overall nutritional cleanliness.",
+    calPerProt: 5.1,
+    calNote: "~123 kcal / 24g per 30g serving",
+    sugScore: 7.0,
+    sugStars: "★★★★",
+    sugNote: "Identical protein quality to MB Raw Whey but ~₹300 pricier and less clean. Choose this only if you need flavour convenience."
+  },
 ];
-products.forEach(p => { p.effPerRs = +(p.gPerRs * p.pdcaas * (p.bv / 100)).toFixed(4); });
+
+// Compute quality %
+products.forEach(p => {
+  p.quality = +(p.pdcaas * p.bv).toFixed(1); // e.g. 1.0 * 104 = 104
+});
 
 const sortKeys = [
-  { key: "effPerRs",  label: "Effective g/₹" },
-  { key: "gPerRs",    label: "Raw g/₹" },
-  { key: "pdcaas",    label: "PDCAAS" },
-  { key: "bv",        label: "BV" },
-  { key: "price",     label: "Price" },
-  { key: "protein",   label: "Total protein" },
+  { key: "gPerRs",      label: "Raw g/₹" },
+  { key: "quality",     label: "Quality %" },
+  { key: "otherScore",  label: "Other Nutrients" },
+  { key: "calPerProt",  label: "Cal/Protein" },
+  { key: "sugScore",    label: "Suggestion" },
 ];
 
-let sortKey = "effPerRs", sortDir = -1;
+let sortKey = "sugScore", sortDir = -1;
 
-function qc(v, max) {
-  const pct = v / max;
-  if (pct >= 0.75) return { fill: "#1D9E75", bg: "var(--green-bg)", txt: "var(--green-txt)" };
-  if (pct >= 0.45) return { fill: "#EF9F27", bg: "var(--amber-bg)", txt: "var(--amber-txt)" };
-  return { fill: "#D85A30", bg: "var(--red-bg)", txt: "var(--red-txt)" };
+function qc(v, max, invert) {
+  const pct = invert ? 1 - (v / max) : v / max;
+  if (pct >= 0.7)  return { fill: "var(--green)", bg: "var(--green-bg)", txt: "var(--green-txt)" };
+  if (pct >= 0.42) return { fill: "var(--amber)", bg: "var(--amber-bg)", txt: "var(--amber-txt)" };
+  return { fill: "var(--red)", bg: "var(--red-bg)", txt: "var(--red-txt)" };
+}
+
+function stars(score) {
+  const full = Math.round(score / 2);
+  return "★".repeat(full) + "☆".repeat(5 - full);
 }
 
 function render() {
-  const sorted = [...products].sort((a, b) => sortDir * (b[sortKey] - a[sortKey]));
-  const maxGpr = Math.max(...products.map(p => p.gPerRs));
-  const maxEff = Math.max(...products.map(p => p.effPerRs));
+  const sorted = [...products].sort((a, b) => {
+    // For calPerProt, lower is better, so invert sort direction for desc
+    const mult = (sortKey === "calPerProt") ? -1 : 1;
+    return sortDir * mult * (b[sortKey] - a[sortKey]);
+  });
 
-  const topRaw = [...products].sort((a,b)=>b.gPerRs-a.gPerRs)[0];
-  const topEff = [...products].sort((a,b)=>b.effPerRs-a.effPerRs)[0];
-  const topQual = [...products].sort((a,b)=>(b.pdcaas*(b.bv/100))-(a.pdcaas*(a.bv/100)))[0];
+  const maxQual = Math.max(...products.map(p => p.quality));
+  const maxRaw  = Math.max(...products.map(p => p.gPerRs));
+  const maxOth  = 10;
+  const maxCal  = Math.max(...products.map(p => p.calPerProt));
+  const maxSug  = 10;
+
+  // Stat cards
+  const topSug  = [...products].sort((a,b) => b.sugScore - a.sugScore)[0];
+  const topQual = [...products].sort((a,b) => b.quality - a.quality)[0];
+  const topNut  = [...products].sort((a,b) => b.otherScore - a.otherScore)[0];
+  const leanest = [...products].sort((a,b) => a.calPerProt - b.calPerProt)[0];
 
   document.getElementById("stat-row").innerHTML = `
-    <div class="stat-card">
-      <div class="stat-label">best raw value</div>
-      <div class="stat-val">${topRaw.name.split(" ").slice(0,2).join(" ")}</div>
-      <div class="stat-sub">${topRaw.gPerRs.toFixed(2)} g/₹</div>
-    </div>
-    <div class="stat-card highlight">
-      <div class="stat-label">best effective value</div>
-      <div class="stat-val">${topEff.name.split(" ").slice(0,2).join(" ")}</div>
-      <div class="stat-sub">${topEff.effPerRs.toFixed(3)} adj. g/₹ — true winner</div>
+    <div class="stat-card top">
+      <div class="stat-label">Top Pick Overall</div>
+      <div class="stat-val">${topSug.name.split(" ").slice(0,2).join(" ")}</div>
+      <div class="stat-sub">${topSug.sugScore}/10 suggestion score</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">highest quality × BV</div>
+      <div class="stat-label">Highest Quality %</div>
       <div class="stat-val">${topQual.name.split(" ").slice(0,2).join(" ")}</div>
-      <div class="stat-sub">score ${(topQual.pdcaas * topQual.bv / 100).toFixed(2)}</div>
+      <div class="stat-sub">${topQual.quality}% PDCAAS × BV</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Best Other Nutrients</div>
+      <div class="stat-val">${topNut.name.split(" ").slice(0,2).join(" ")}</div>
+      <div class="stat-sub">${topNut.otherScore}/10 micronutrient score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Leanest Protein</div>
+      <div class="stat-val">${leanest.name.split(" ").slice(0,2).join(" ")}</div>
+      <div class="stat-sub">${leanest.calPerProt} kcal/g protein</div>
     </div>
   `;
 
-  document.getElementById("sort-tabs").innerHTML = sortKeys.map(s =>
-    `<button class="stab${sortKey===s.key?' active':''}" onclick="setSort('${s.key}')">${s.label}</button>`
-  ).join("");
+  // Sort tabs
+  document.getElementById("sort-tabs").innerHTML =
+    `<span class="sort-label">sort by →</span>` +
+    sortKeys.map(s =>
+      `<button class="stab${sortKey===s.key?' active':''}" onclick="setSort('${s.key}')">${s.label}</button>`
+    ).join("");
 
+  // Table header
   const thead = `<thead><tr>
     <th>Product</th>
-    <th>Pack</th>
-    <th>Price (₹)</th>
-    <th>Protein (g)</th>
-    <th>Raw g/₹ ${sortKey==='gPerRs'?'↕':''}</th>
-    <th>PDCAAS ${sortKey==='pdcaas'?'↕':''}</th>
-    <th>BV ${sortKey==='bv'?'↕':''}</th>
-    <th>Effective g/₹ ${sortKey==='effPerRs'?'↕':''}</th>
+    <th class="${sortKey==='gPerRs'?'active-sort':''}">Raw g/₹ ${sortKey==='gPerRs'?'↕':''}</th>
+    <th class="${sortKey==='quality'?'active-sort':''}">Quality % ${sortKey==='quality'?'↕':''}</th>
+    <th class="${sortKey==='otherScore'?'active-sort':''}">Other Nutrients ${sortKey==='otherScore'?'↕':''}</th>
+    <th class="${sortKey==='calPerProt'?'active-sort':''}">Cal / Protein ${sortKey==='calPerProt'?'↕':''}</th>
+    <th class="${sortKey==='sugScore'?'active-sort':''}">Suggestion ${sortKey==='sugScore'?'↕':''}</th>
   </tr></thead>`;
 
   const rows = sorted.map((p, i) => {
-    const rawC = qc(p.gPerRs, maxGpr);
-    const effC = qc(p.effPerRs, maxEff);
-    const pdcC = qc(p.pdcaas, 1.0);
-    const bvC  = qc(p.bv, 110);
+    const rawC  = qc(p.gPerRs, maxRaw, false);
+    const qualC = qc(p.quality, 110, false); // cap ref at 110 since whey can hit 104
+    const othC  = qc(p.otherScore, maxOth, false);
+    const calC  = qc(p.calPerProt, maxCal, true); // invert: lower is better
+    const sugC  = qc(p.sugScore, maxSug, false);
+
+    const qualBarW = Math.min(p.quality, 100); // cap bar at 100%
+
     return `<tr>
       <td>
-        <div class="prod-name">${p.name}${i===0?'<span class="winner">top</span>':''}</div>
+        <div class="prod-name">${p.name}${i===0?'<span class="rank-chip">Top Rated</span>':''}</div>
         <div class="prod-src">${p.source}</div>
       </td>
-      <td style="color:var(--text2);">${p.pack}</td>
-      <td>₹${p.price.toLocaleString()}</td>
-      <td>${p.protein}g</td>
       <td>
         <span class="badge" style="background:${rawC.bg};color:${rawC.txt};">${p.gPerRs.toFixed(2)}</span>
-        <div class="bar-wrap"><div class="bar-fill" style="width:${(p.gPerRs/maxGpr*100).toFixed(0)}%;background:${rawC.fill};"></div></div>
-      </td>
-      <td><span class="badge" style="background:${pdcC.bg};color:${pdcC.txt};">${p.pdcaas.toFixed(2)}</span></td>
-      <td>
-        <span class="badge" style="background:${bvC.bg};color:${bvC.txt};">${p.bv}</span>
-        <div class="bar-wrap"><div class="bar-fill" style="width:${(p.bv/110*100).toFixed(0)}%;background:${bvC.fill};"></div></div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:${(p.gPerRs/maxRaw*100).toFixed(0)}%;background:${rawC.fill};"></div></div>
       </td>
       <td>
-        <span class="badge" style="background:${effC.bg};color:${effC.txt};font-size:12px;font-weight:600;">${p.effPerRs.toFixed(3)}</span>
-        <div class="bar-wrap"><div class="bar-fill" style="width:${(p.effPerRs/maxEff*100).toFixed(0)}%;background:${effC.fill};"></div></div>
+        <div class="quality-score" style="color:${qualC.fill};">${p.quality}%${p.quality>100?'<span style="font-size:9px;color:var(--text3);vertical-align:super;margin-left:1px;">†</span>':''}</div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:${qualBarW}%;background:${qualC.fill};"></div></div>
+        <div class="quality-note">PDCAAS ${p.pdcaas.toFixed(2)} · BV ${p.bv}</div>
+      </td>
+      <td>
+        <div class="nutrient-score" style="color:${othC.fill};">${p.otherScore}<span style="font-size:10px;color:var(--text3);font-family:var(--sans);font-weight:400;">/10</span></div>
+        <div class="nutrient-tags">
+          ${p.otherTags.map(t => `<span class="ntag">${t}</span>`).join('')}
+        </div>
+      </td>
+      <td>
+        <span class="badge" style="background:${calC.bg};color:${calC.txt};">${p.calPerProt}</span>
+        <div class="cal-note">kcal / g protein</div>
+        <div class="cal-note" style="margin-top:2px;font-size:9.5px;">${p.calNote}</div>
+      </td>
+      <td>
+        <div style="display:flex;align-items:baseline;gap:3px;">
+          <span class="sug-score" style="color:${sugC.fill};">${p.sugScore}</span>
+          <span class="sug-denom">/10</span>
+        </div>
+        <div class="stars" style="color:${sugC.fill};">${stars(p.sugScore)}</div>
+        <div class="sug-note">${p.sugNote}</div>
       </td>
     </tr>`;
   }).join("");
