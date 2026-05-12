@@ -6,6 +6,21 @@
 <title>Protein Per Rupee — Value Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  (() => {
+    try {
+      const savedTheme = localStorage.getItem('protein-theme');
+      const deviceTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        document.documentElement.dataset.theme = savedTheme;
+        document.documentElement.dataset.themeSource = 'saved';
+      } else {
+        document.documentElement.dataset.theme = deviceTheme;
+        document.documentElement.dataset.themeSource = 'device';
+      }
+    } catch (error) {}
+  })();
+</script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -28,6 +43,23 @@
     --sans: 'Outfit', sans-serif;
     --display: 'Syne', sans-serif;
   }
+  html[data-theme="light"] {
+    --bg: #f4f3ee;
+    --surface: #ffffff;
+    --surface2: #eeede7;
+    --surface3: #e6e4dc;
+    --border: rgba(0,0,0,0.09);
+    --border2: rgba(0,0,0,0.16);
+    --text: #18180f;
+    --text2: #555550;
+    --text3: #999990;
+    --green-bg: #daf3ea; --green-txt: #0b4a34;
+    --amber-bg: #fcefd3; --amber-txt: #5a3504;
+    --red-bg: #fbe8e3; --red-txt: #4a1508;
+    --blue-bg: #ddeaf9; --blue-txt: #0a3570;
+    --purple-bg: #ede6fa; --purple-txt: #31186a;
+    color-scheme: light;
+  }
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #13130e; --surface: #1c1c16; --surface2: #242419; --surface3: #2c2c20;
@@ -39,6 +71,17 @@
       --blue-bg: #0b2650; --blue-txt: #7ab2f5;
       --purple-bg: #24144e; --purple-txt: #c4a8f8;
     }
+  }
+  html[data-theme="dark"] {
+    --bg: #13130e; --surface: #1c1c16; --surface2: #242419; --surface3: #2c2c20;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.16);
+    --text: #eeede3; --text2: #9c9b8f; --text3: #55554c;
+    --green-bg: #0c3326; --green-txt: #7ddfb8;
+    --amber-bg: #3a2203; --amber-txt: #f5c068;
+    --red-bg: #3e1508; --red-txt: #f0a48d;
+    --blue-bg: #0b2650; --blue-txt: #7ab2f5;
+    --purple-bg: #24144e; --purple-txt: #c4a8f8;
+    color-scheme: dark;
   }
 
   body {
@@ -52,6 +95,45 @@
   }
 
   .container { max-width: 1020px; margin: 0 auto; }
+
+  .header-actions {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+  }
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0.5px solid var(--border2);
+    border-radius: 100px;
+    background: var(--surface);
+    color: var(--text2);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.9px;
+    padding: 7px 11px;
+    text-transform: uppercase;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+  }
+  .theme-toggle::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 3px var(--green-bg);
+  }
+  .theme-toggle:hover {
+    background: var(--surface2);
+    border-color: var(--green);
+    color: var(--text);
+    transform: translateY(-1px);
+  }
 
   /* Header */
   header { margin-bottom: 32px; }
@@ -253,6 +335,11 @@
       padding: 22px 14px 36px;
       font-size: 13px;
     }
+    .header-actions { width: 100%; align-items: stretch; gap: 10px; }
+    .theme-toggle {
+      justify-content: center;
+      width: 100%;
+    }
     header { margin-bottom: 22px; }
     .header-row { flex-direction: column; gap: 14px; }
     .header-eyebrow { font-size: 9px; letter-spacing: 1.4px; }
@@ -398,7 +485,6 @@
 </head>
 <body>
 <div class="container">
-
   <header>
     <div class="header-row">
       <div>
@@ -406,12 +492,15 @@
         <h1>Protein <span>Per Rupee</span><br>Value Tracker</h1>
         <p>Real protein value considering quantity, quality, bioavailability, other nutrients, and calorie efficiency.</p>
       </div>
-      <a class="page-link" href="blend_comparison.html" aria-label="Open protein blend comparison page">
-        <span>
-          <span class="page-link-kicker">Also available</span>
-          <span class="page-link-title">Open Blend Matrix</span>
-        </span>
-      </a>
+      <div class="header-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch color theme">Dark mode</button>
+        <a class="page-link" href="blend_comparison.html" aria-label="Open protein blend comparison page">
+          <span>
+            <span class="page-link-kicker">Also available</span>
+            <span class="page-link-title">Open Blend Matrix</span>
+          </span>
+        </a>
+      </div>
     </div>
   </header>
 
@@ -442,6 +531,37 @@
 </div>
 
 <script>
+const themeToggle = document.getElementById("themeToggle");
+const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+function getEffectiveTheme() {
+  return document.documentElement.dataset.theme || (prefersDark.matches ? "dark" : "light");
+}
+
+function updateThemeToggle() {
+  const mode = getEffectiveTheme();
+  themeToggle.textContent = mode === "dark" ? "Light mode" : "Dark mode";
+  themeToggle.setAttribute("aria-pressed", mode === "dark" ? "true" : "false");
+}
+
+themeToggle.addEventListener("click", () => {
+  const nextMode = getEffectiveTheme() === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = nextMode;
+  document.documentElement.dataset.themeSource = "saved";
+  try { localStorage.setItem("protein-theme", nextMode); } catch (error) {}
+  updateThemeToggle();
+});
+
+prefersDark.addEventListener?.("change", () => {
+  if (document.documentElement.dataset.themeSource !== "saved") {
+    document.documentElement.dataset.theme = prefersDark.matches ? "dark" : "light";
+    document.documentElement.dataset.themeSource = "device";
+    updateThemeToggle();
+  }
+});
+
+updateThemeToggle();
+
 const products = [
   {
     name: "Yogabar HP Oats",

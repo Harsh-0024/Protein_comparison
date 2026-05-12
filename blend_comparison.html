@@ -5,6 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protein Blend Comparison — A vs B vs C</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script>
+  (() => {
+    try {
+      const savedTheme = localStorage.getItem('protein-theme');
+      const deviceTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        document.documentElement.dataset.theme = savedTheme;
+        document.documentElement.dataset.themeSource = 'saved';
+      } else {
+        document.documentElement.dataset.theme = deviceTheme;
+        document.documentElement.dataset.themeSource = 'device';
+      }
+    } catch (error) {}
+  })();
+</script>
 <style>
   :root {
     --bg: #f5f2ec;
@@ -22,6 +37,59 @@
     --red: #b83232;
     --red-light: #fdeaea;
     --winner: #2a7c5a;
+    --green-border: rgba(42,124,90,0.25);
+    --green-border-soft: rgba(42,124,90,0.2);
+    --green-border-strong: rgba(42,124,90,0.28);
+    --green-soft: rgba(42,124,90,0.08);
+    --link-shadow: rgba(42,124,90,0.09);
+    --link-shadow-hover: rgba(42,124,90,0.16);
+    --table-shadow: rgba(0,0,0,0.06);
+    --card-shadow: rgba(0,0,0,0.06);
+    --surface-hover: #f9f6f0;
+    --row-hover: #faf8f4;
+    --winner-hover: #dff0e8;
+    --chip-bg: #f0ede6;
+    --ring-track: #e8e4dc;
+    --bar-green: #2a7c5a;
+    --bar-amber: #e0a840;
+    --bar-low: #b85c00;
+    --on-green: #ffffff;
+  }
+  html[data-theme="light"] { color-scheme: light; }
+  html[data-theme="dark"] {
+    --bg: #11130f;
+    --surface: #1a1d18;
+    --surface2: #24281f;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.15);
+    --text: #f0ede5;
+    --muted: #a8a197;
+    --green: #78d0a5;
+    --green-light: #132a20;
+    --green-mid: rgba(120,208,165,0.14);
+    --amber: #dda051;
+    --amber-light: #342413;
+    --red: #ee8d86;
+    --red-light: #351a1a;
+    --winner: #78d0a5;
+    --green-border: rgba(120,208,165,0.28);
+    --green-border-soft: rgba(120,208,165,0.2);
+    --green-border-strong: rgba(120,208,165,0.34);
+    --green-soft: rgba(120,208,165,0.09);
+    --link-shadow: rgba(0,0,0,0.18);
+    --link-shadow-hover: rgba(120,208,165,0.12);
+    --table-shadow: rgba(0,0,0,0.24);
+    --card-shadow: rgba(0,0,0,0.22);
+    --surface-hover: #22261f;
+    --row-hover: #20241d;
+    --winner-hover: #193626;
+    --chip-bg: #25281f;
+    --ring-track: #30342b;
+    --bar-green: #78d0a5;
+    --bar-amber: #dda051;
+    --bar-low: #bd7540;
+    --on-green: #0d1b14;
+    color-scheme: dark;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html { scroll-behavior:smooth; }
@@ -46,6 +114,45 @@
   }
 
   .page { max-width:1200px; margin:0 auto; padding:0 32px 80px; }
+
+  .header-actions {
+    display:flex;
+    flex:0 0 auto;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:12px;
+  }
+  .theme-toggle {
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    border:1px solid var(--border-strong);
+    border-radius:999px;
+    background:var(--surface);
+    color:var(--muted);
+    cursor:pointer;
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    font-weight:500;
+    letter-spacing:0.12em;
+    padding:8px 12px;
+    text-transform:uppercase;
+    transition:background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+  }
+  .theme-toggle::before {
+    content:'';
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 0 3px var(--green-light);
+  }
+  .theme-toggle:hover {
+    background:var(--green-light);
+    border-color:var(--green-border);
+    color:var(--green);
+    transform:translateY(-1px);
+  }
 
   /* HEADER */
   header { padding:72px 0 56px; border-bottom:1px solid var(--border-strong); margin-bottom:48px; }
@@ -85,12 +192,12 @@
     margin-top:4px;
     min-width:210px;
     padding:13px 16px;
-    border:1px solid rgba(42,124,90,0.25);
+    border:1px solid var(--green-border);
     border-radius:8px;
     background:var(--green-light);
     color:var(--green);
     text-decoration:none;
-    box-shadow:0 10px 28px rgba(42,124,90,0.09);
+    box-shadow:0 10px 28px var(--link-shadow);
     transition:background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s, box-shadow 0.15s;
   }
   .page-link-kicker {
@@ -119,18 +226,18 @@
   .page-link:hover {
     background:var(--green);
     border-color:var(--green);
-    color:#fff;
-    box-shadow:0 12px 32px rgba(42,124,90,0.16);
+    color:var(--on-green);
+    box-shadow:0 12px 32px var(--link-shadow-hover);
     transform:translateY(-1px);
   }
   .page-link:hover .page-link-kicker,
-  .page-link:hover .page-link-title { color:#fff; }
+  .page-link:hover .page-link-title { color:var(--on-green); }
   .page-link:hover::after { transform:translateX(2px); }
 
   /* WINNER STRIP */
   .winner-strip {
     background:var(--green-light);
-    border:1px solid rgba(42,124,90,0.2);
+    border:1px solid var(--green-border-soft);
     border-radius:12px;
     padding:16px 24px;
     margin-bottom:36px;
@@ -150,7 +257,7 @@
   .sort-hint::before { content:'↕'; font-size:14px; }
 
   /* TABLE WRAP */
-  .table-outer { overflow-x:auto; border-radius:16px; border:1px solid var(--border-strong); box-shadow:0 2px 24px rgba(0,0,0,0.06); }
+  .table-outer { overflow-x:auto; border-radius:16px; border:1px solid var(--border-strong); box-shadow:0 2px 24px var(--table-shadow); }
 
   table { width:100%; border-collapse:collapse; min-width:900px; background:var(--surface); }
 
@@ -172,7 +279,7 @@
     height:100%;
   }
   thead th:last-child .th-inner { border-right:none; }
-  .th-inner:hover { background:#f9f6f0; }
+  .th-inner:hover { background:var(--surface-hover); }
   .th-inner.sorted { background:var(--green-light); }
   .th-label {
     font-family:'DM Mono',monospace;
@@ -208,9 +315,9 @@
     animation:rowIn 0.3s forwards;
   }
   tbody tr:last-child { border-bottom:none; }
-  tbody tr:hover { background:#faf8f4; }
+  tbody tr:hover { background:var(--row-hover); }
   tbody tr.is-winner { background:var(--green-light); }
-  tbody tr.is-winner:hover { background:#dff0e8; }
+  tbody tr.is-winner:hover { background:var(--winner-hover); }
 
   @keyframes rowIn {
     to { opacity:1; transform:translateY(0); }
@@ -244,14 +351,14 @@
     border-radius:4px;
     font-weight:500;
   }
-  .badge-winner { background:var(--green-mid); color:var(--green); border:1px solid rgba(42,124,90,0.25); }
-  .badge-runner { background:#f0ede6; color:var(--muted); border:1px solid var(--border); }
+  .badge-winner { background:var(--green-mid); color:var(--green); border:1px solid var(--green-border); }
+  .badge-runner { background:var(--chip-bg); color:var(--muted); border:1px solid var(--border); }
 
   /* INGREDIENTS CELL */
   .ingredients-cell { max-width:220px; }
   .ing-item {
     display:inline-block;
-    background:#f0ede6;
+    background:var(--chip-bg);
     border:1px solid var(--border);
     border-radius:5px;
     font-size:11px;
@@ -261,7 +368,7 @@
     font-family:'DM Mono',monospace;
     white-space:nowrap;
   }
-  .is-winner .ing-item { background:rgba(42,124,90,0.08); border-color:rgba(42,124,90,0.2); }
+  .is-winner .ing-item { background:var(--green-soft); border-color:var(--green-border-soft); }
 
   /* METRIC CELLS */
   .metric-cell { white-space:nowrap; }
@@ -329,6 +436,11 @@
   @media (max-width: 720px) {
     body { font-size:13px; }
     .page { padding:0 14px 56px; }
+    .header-actions { width:100%; align-items:stretch; gap:10px; }
+    .theme-toggle {
+      justify-content:center;
+      width:100%;
+    }
     header {
       padding:42px 0 34px;
       margin-bottom:28px;
@@ -432,7 +544,7 @@
       background:var(--surface);
     }
     .th-inner.sorted {
-      border-color:rgba(42,124,90,0.28);
+      border-color:var(--green-border-strong);
       background:var(--green-light);
     }
     .th-label {
@@ -450,10 +562,10 @@
       border:1px solid var(--border-strong);
       border-radius:14px;
       background:var(--surface);
-      box-shadow:0 10px 26px rgba(0,0,0,0.06);
+      box-shadow:0 10px 26px var(--card-shadow);
     }
     tbody tr.is-winner {
-      border-color:rgba(42,124,90,0.28);
+      border-color:var(--green-border-strong);
       background:var(--green-light);
     }
     td {
@@ -537,7 +649,6 @@
 </head>
 <body>
 <div class="page">
-
   <header>
     <div class="header-row">
       <div>
@@ -545,12 +656,15 @@
         <h1>Option A vs <em>B</em> vs C</h1>
         <p class="subtitle">Every metric calculated per 50g serving. Click any column header to sort best → worst. Designed for one blend, made once, used daily.</p>
       </div>
-      <a class="page-link" href="index.html" aria-label="Open protein value tracker page">
-        <span>
-          <span class="page-link-kicker">Also available</span>
-          <span class="page-link-title">Open Value Tracker</span>
-        </span>
-      </a>
+      <div class="header-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch color theme">Dark mode</button>
+        <a class="page-link" href="index.html" aria-label="Open protein value tracker page">
+          <span>
+            <span class="page-link-kicker">Also available</span>
+            <span class="page-link-title">Open Value Tracker</span>
+          </span>
+        </a>
+      </div>
     </div>
   </header>
 
@@ -582,6 +696,39 @@
 </div>
 
 <script>
+const themeToggle = document.getElementById('themeToggle');
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+function getEffectiveTheme() {
+  return document.documentElement.dataset.theme || (prefersDark.matches ? 'dark' : 'light');
+}
+
+function updateThemeToggle() {
+  const mode = getEffectiveTheme();
+  themeToggle.textContent = mode === 'dark' ? 'Light mode' : 'Dark mode';
+  themeToggle.setAttribute('aria-pressed', mode === 'dark' ? 'true' : 'false');
+}
+
+themeToggle.addEventListener('click', () => {
+  const nextMode = getEffectiveTheme() === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = nextMode;
+  document.documentElement.dataset.themeSource = 'saved';
+  try { localStorage.setItem('protein-theme', nextMode); } catch (error) {}
+  updateThemeToggle();
+  renderBody();
+});
+
+prefersDark.addEventListener?.('change', () => {
+  if (document.documentElement.dataset.themeSource !== 'saved') {
+    document.documentElement.dataset.theme = prefersDark.matches ? 'dark' : 'light';
+    document.documentElement.dataset.themeSource = 'device';
+    updateThemeToggle();
+    renderBody();
+  }
+});
+
+updateThemeToggle();
+
 // ── DATA ──────────────────────────────────────────────────────────────
 const options = [
   {
@@ -659,9 +806,9 @@ function barPct(val, key, higherIsBetter) {
 
 function barColor(key, val, higherIsBetter) {
   const pct = barPct(val, key, higherIsBetter);
-  if (pct >= 66) return '#2a7c5a';
-  if (pct >= 33) return '#e0a840';
-  return '#b85c00';
+  if (pct >= 66) return 'var(--bar-green)';
+  if (pct >= 33) return 'var(--bar-amber)';
+  return 'var(--bar-low)';
 }
 
 function isBest(key, val, higherIsBetter) {
@@ -679,7 +826,7 @@ function ringsvg(pct, color) {
   const circ = 2 * Math.PI * r;
   const dash = (pct / 100) * circ;
   return `<svg class="ring-svg" width="48" height="48" viewBox="0 0 48 48">
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e8e4dc" stroke-width="${stroke}"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--ring-track)" stroke-width="${stroke}"/>
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
       stroke-dasharray="${dash} ${circ}" stroke-dashoffset="${circ * 0.25}"
       stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
@@ -739,7 +886,7 @@ function renderBody() {
       else if (col.key === 'overallRating' || col.key === 'micronutrientRating' || col.key === 'qualityRating') {
         td.className = 'rating-cell';
         const val = opt[col.key];
-        const color = val >= 80 ? '#2a7c5a' : val >= 70 ? '#e0a840' : '#b85c00';
+        const color = val >= 80 ? 'var(--bar-green)' : val >= 70 ? 'var(--bar-amber)' : 'var(--bar-low)';
         td.innerHTML = `
           <div class="rating-ring-wrap">
             ${ringsvg(val, color)}
