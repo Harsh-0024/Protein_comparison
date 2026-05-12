@@ -327,10 +327,211 @@
   footer { margin-top:56px; padding-top:20px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); font-family:'DM Mono',monospace; }
 
   @media (max-width: 720px) {
-    .page { padding:0 20px 64px; }
-    header { padding-top:48px; }
+    body { font-size:13px; }
+    .page { padding:0 14px 56px; }
+    header {
+      padding:42px 0 34px;
+      margin-bottom:28px;
+    }
     .header-row { flex-direction:column; gap:22px; }
-    .page-link { align-self:flex-start; }
+    .eyebrow {
+      font-size:9px;
+      letter-spacing:0.16em;
+      margin-bottom:16px;
+      gap:8px;
+    }
+    .eyebrow::before { width:18px; }
+    h1 { font-size:38px; line-height:1.02; margin-bottom:16px; }
+    .subtitle { font-size:13.5px; line-height:1.6; }
+    .page-link {
+      align-self:stretch;
+      min-width:0;
+      width:100%;
+      padding:12px 14px;
+    }
+    .winner-strip {
+      align-items:flex-start;
+      gap:11px;
+      padding:14px 15px;
+      margin-bottom:26px;
+      border-radius:10px;
+      font-size:12.5px;
+      line-height:1.55;
+    }
+    .winner-strip strong {
+      display:block;
+      margin-bottom:2px;
+      font-size:11px;
+      line-height:1.35;
+    }
+    .controls {
+      align-items:flex-start;
+      gap:9px;
+      margin-bottom:14px;
+    }
+    .reset-btn {
+      padding:8px 12px;
+      font-size:10px;
+    }
+    .active-sort-label {
+      flex:1 1 150px;
+      padding-top:2px;
+      font-size:10px;
+      line-height:1.5;
+    }
+    .sort-hint {
+      margin-bottom:12px;
+      font-size:10px;
+      line-height:1.45;
+    }
+    .table-outer {
+      overflow:visible;
+      border:0;
+      border-radius:0;
+      box-shadow:none;
+    }
+    table {
+      display:block;
+      min-width:0;
+      width:100%;
+      background:transparent;
+    }
+    thead,
+    tbody,
+    thead tr,
+    tbody tr {
+      display:block;
+    }
+    thead {
+      margin-bottom:14px;
+    }
+    thead tr {
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      border-bottom:0;
+      padding:0 0 6px;
+      scrollbar-width:thin;
+    }
+    thead th {
+      display:block;
+      flex:0 0 auto;
+      position:static;
+    }
+    thead th:nth-child(1),
+    thead th:nth-child(2),
+    thead th:nth-child(11) {
+      display:none;
+    }
+    .th-inner {
+      min-width:112px;
+      height:auto;
+      padding:10px 11px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:var(--surface);
+    }
+    .th-inner.sorted {
+      border-color:rgba(42,124,90,0.28);
+      background:var(--green-light);
+    }
+    .th-label {
+      font-size:9px;
+      line-height:1.25;
+    }
+    .th-sort { font-size:13px; }
+    .th-best { display:none; }
+    tbody {
+      display:grid;
+      gap:14px;
+    }
+    tbody tr {
+      overflow:hidden;
+      border:1px solid var(--border-strong);
+      border-radius:14px;
+      background:var(--surface);
+      box-shadow:0 10px 26px rgba(0,0,0,0.06);
+    }
+    tbody tr.is-winner {
+      border-color:rgba(42,124,90,0.28);
+      background:var(--green-light);
+    }
+    td {
+      display:grid;
+      grid-template-columns:104px minmax(0, 1fr);
+      gap:12px;
+      align-items:start;
+      padding:12px 14px;
+      border-right:0;
+      border-bottom:1px solid var(--border);
+      font-size:13px;
+    }
+    td:last-child { border-bottom:0; }
+    td::before {
+      color:var(--muted);
+      content:'';
+      font-family:'DM Mono',monospace;
+      font-size:9px;
+      letter-spacing:0.12em;
+      line-height:1.35;
+      text-transform:uppercase;
+    }
+    td:nth-child(1)::before { content:'Option'; }
+    td:nth-child(2)::before { content:'Ingredients'; }
+    td:nth-child(3)::before { content:'Protein / ₹'; }
+    td:nth-child(4)::before { content:'Protein'; }
+    td:nth-child(5)::before { content:'Calories'; }
+    td:nth-child(6)::before { content:'Cost'; }
+    td:nth-child(7)::before { content:'Protein / kcal'; }
+    td:nth-child(8)::before { content:'Micros'; }
+    td:nth-child(9)::before { content:'Quality'; }
+    td:nth-child(10)::before { content:'Overall'; }
+    td:nth-child(11)::before { content:'Why'; }
+    .opt-cell,
+    .ingredients-cell,
+    .rating-cell,
+    .just-cell {
+      min-width:0;
+      max-width:none;
+    }
+    .opt-label {
+      font-size:25px;
+      margin-bottom:5px;
+    }
+    .opt-badge {
+      font-size:8px;
+      line-height:1.35;
+      white-space:normal;
+    }
+    .ingredients-cell {
+      align-items:start;
+    }
+    .ing-item {
+      white-space:normal;
+      line-height:1.35;
+    }
+    .metric-val { font-size:16px; }
+    .metric-bar {
+      width:100%;
+      max-width:150px;
+    }
+    .rating-ring-wrap {
+      gap:10px;
+    }
+    .rating-pct { font-size:20px; }
+    .just-cell {
+      grid-template-columns:1fr;
+      gap:6px;
+    }
+    .just-text {
+      font-size:12px;
+      line-height:1.6;
+    }
+    footer {
+      margin-top:34px;
+      font-size:10.5px;
+      line-height:1.6;
+    }
   }
 </style>
 </head>
