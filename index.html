@@ -164,17 +164,9 @@
   .stat-val { font-size: 15px; font-weight: 600; color: var(--text); font-family: var(--display); }
   .stat-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
 
-  /* Sort tabs */
-  .sort-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
-  .sort-label { font-size: 11px; color: var(--text3); font-family: var(--mono); margin-right: 4px; }
-  .stab {
-    font-size: 11.5px; padding: 5px 12px; border-radius: var(--radius);
-    border: 0.5px solid var(--border2); background: transparent;
-    color: var(--text2); cursor: pointer; transition: all 0.15s;
-    font-family: var(--sans);
-  }
-  .stab:hover { background: var(--surface2); color: var(--text); }
-  .stab.active { background: var(--text); color: var(--bg); border-color: transparent; font-weight: 500; }
+  /* Table header sort hint */
+  thead th .sort-arrow { opacity: 0.35; margin-left: 4px; font-size: 10px; }
+  thead th.active-sort .sort-arrow { opacity: 1; }
 
   /* Table */
   .table-wrap {
@@ -282,14 +274,12 @@
   </header>
 
   <div class="formula-row">
-    <div class="pill"><div class="dot" style="background:var(--green)"></div>Quality % <code>= PDCAAS × BV</code></div>
+    <div class="pill"><div class="dot" style="background:var(--green)"></div>Quality % <code>= PDCAAS × BV, capped at 100%</code></div>
     <div class="pill"><div class="dot" style="background:var(--blue)"></div>Cal/Protein <code>= kcal ÷ g protein</code> (lower = leaner)</div>
     <div class="pill"><div class="dot" style="background:var(--purple)"></div>Other Nutrients <code>rated /10</code> on micronutrient richness</div>
   </div>
 
   <div class="stat-row" id="stat-row"></div>
-  <div class="sort-tabs" id="sort-tabs"></div>
-
   <div class="table-wrap">
     <table id="ptbl" aria-label="Protein product comparison table"></table>
   </div>
@@ -397,13 +387,13 @@ const products = [
   },
 ];
 
-// Compute quality %
+// Compute quality % — capped at 100 (BV > 100 is a benchmark artefact, not a true ceiling-breaker)
 products.forEach(p => {
-  p.quality = +(p.pdcaas * p.bv).toFixed(1); // e.g. 1.0 * 104 = 104
+  p.quality = Math.min(+(p.pdcaas * p.bv).toFixed(1), 100);
 });
 
 const sortKeys = [
-  { key: "gPerRs",      label: "Raw g/₹" },
+  { key: "gPerRs",      label: "Protein/₹" },
   { key: "quality",     label: "Quality %" },
   { key: "otherScore",  label: "Other Nutrients" },
   { key: "calPerProt",  label: "Cal/Protein" },
@@ -466,31 +456,28 @@ function render() {
     </div>
   `;
 
-  // Sort tabs
-  document.getElementById("sort-tabs").innerHTML =
-    `<span class="sort-label">sort by →</span>` +
-    sortKeys.map(s =>
-      `<button class="stab${sortKey===s.key?' active':''}" onclick="setSort('${s.key}')">${s.label}</button>`
-    ).join("");
+  // Table header — clicking any sortable th sorts the table
+  const thStyle = (key) => sortKey === key ? 'active-sort' : '';
+  const arrow = (key) => {
+    if (sortKey !== key) return '<span class="sort-arrow">↕</span>';
+    return `<span class="sort-arrow">${sortDir === -1 ? '↓' : '↑'}</span>`;
+  };
 
-  // Table header
   const thead = `<thead><tr>
     <th>Product</th>
-    <th class="${sortKey==='gPerRs'?'active-sort':''}">Raw g/₹ ${sortKey==='gPerRs'?'↕':''}</th>
-    <th class="${sortKey==='quality'?'active-sort':''}">Quality % ${sortKey==='quality'?'↕':''}</th>
-    <th class="${sortKey==='otherScore'?'active-sort':''}">Other Nutrients ${sortKey==='otherScore'?'↕':''}</th>
-    <th class="${sortKey==='calPerProt'?'active-sort':''}">Cal / Protein ${sortKey==='calPerProt'?'↕':''}</th>
-    <th class="${sortKey==='sugScore'?'active-sort':''}">Suggestion ${sortKey==='sugScore'?'↕':''}</th>
+    <th class="${thStyle('gPerRs')}" onclick="setSort('gPerRs')">Protein/₹ ${arrow('gPerRs')}</th>
+    <th class="${thStyle('quality')}" onclick="setSort('quality')">Quality % ${arrow('quality')}</th>
+    <th class="${thStyle('otherScore')}" onclick="setSort('otherScore')">Other Nutrients ${arrow('otherScore')}</th>
+    <th class="${thStyle('calPerProt')}" onclick="setSort('calPerProt')">Cal / Protein ${arrow('calPerProt')}</th>
+    <th class="${thStyle('sugScore')}" onclick="setSort('sugScore')">Suggestion ${arrow('sugScore')}</th>
   </tr></thead>`;
 
   const rows = sorted.map((p, i) => {
     const rawC  = qc(p.gPerRs, maxRaw, false);
-    const qualC = qc(p.quality, 110, false); // cap ref at 110 since whey can hit 104
+    const qualC = qc(p.quality, 100, false);
     const othC  = qc(p.otherScore, maxOth, false);
     const calC  = qc(p.calPerProt, maxCal, true); // invert: lower is better
     const sugC  = qc(p.sugScore, maxSug, false);
-
-    const qualBarW = Math.min(p.quality, 100); // cap bar at 100%
 
     return `<tr>
       <td>
@@ -502,8 +489,8 @@ function render() {
         <div class="bar-wrap"><div class="bar-fill" style="width:${(p.gPerRs/maxRaw*100).toFixed(0)}%;background:${rawC.fill};"></div></div>
       </td>
       <td>
-        <div class="quality-score" style="color:${qualC.fill};">${p.quality}%${p.quality>100?'<span style="font-size:9px;color:var(--text3);vertical-align:super;margin-left:1px;">†</span>':''}</div>
-        <div class="bar-wrap"><div class="bar-fill" style="width:${qualBarW}%;background:${qualC.fill};"></div></div>
+        <div class="quality-score" style="color:${qualC.fill};">${p.quality}%</div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:${p.quality}%;background:${qualC.fill};"></div></div>
         <div class="quality-note">PDCAAS ${p.pdcaas.toFixed(2)} · BV ${p.bv}</div>
       </td>
       <td>
