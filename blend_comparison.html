@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protein Blend Comparison — A vs B vs C</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ec;
+    --surface: #ffffff;
+    --surface2: #eeeae2;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.15);
+    --text: #1a1a18;
+    --muted: #7a7670;
+    --green: #2a7c5a;
+    --green-light: #eaf4ee;
+    --green-mid: rgba(42,124,90,0.12);
+    --amber: #b85c00;
+    --amber-light: #fef3e6;
+    --red: #b83232;
+    --red-light: #fdeaea;
+    --winner: #2a7c5a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* grain overlay */
+  body::after {
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none;
+    z-index:100;
+    opacity:0.5;
+  }
+
+  .page { max-width:1200px; margin:0 auto; padding:0 32px 80px; }
+
+  /* HEADER */
+  header { padding:72px 0 56px; border-bottom:1px solid var(--border-strong); margin-bottom:48px; }
+  .header-row {
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:28px;
+  }
+  .eyebrow {
+    font-family:'DM Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--green);
+    margin-bottom:20px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before { content:''; display:block; width:24px; height:1px; background:var(--green); }
+  h1 {
+    font-family:'Playfair Display', serif;
+    font-size:clamp(36px,5vw,64px);
+    font-weight:900;
+    line-height:1.0;
+    letter-spacing:-0.02em;
+    margin-bottom:20px;
+    color:var(--text);
+  }
+  h1 em { font-style:italic; color:var(--green); }
+  .subtitle { font-size:15px; color:var(--muted); max-width:540px; line-height:1.7; font-weight:300; }
+  .page-link {
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:center;
+    gap:14px;
+    flex:0 0 auto;
+    margin-top:4px;
+    min-width:210px;
+    padding:13px 16px;
+    border:1px solid rgba(42,124,90,0.25);
+    border-radius:8px;
+    background:var(--green-light);
+    color:var(--green);
+    text-decoration:none;
+    box-shadow:0 10px 28px rgba(42,124,90,0.09);
+    transition:background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+  .page-link-kicker {
+    display:block;
+    margin-bottom:3px;
+    font-family:'DM Mono',monospace;
+    font-size:9px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .page-link-title {
+    display:block;
+    color:var(--green);
+    font-family:'Playfair Display',serif;
+    font-size:18px;
+    font-weight:900;
+    line-height:1.1;
+  }
+  .page-link::after {
+    content:'→';
+    font-family:'DM Mono',monospace;
+    font-size:18px;
+    transition:transform 0.15s;
+  }
+  .page-link:hover {
+    background:var(--green);
+    border-color:var(--green);
+    color:#fff;
+    box-shadow:0 12px 32px rgba(42,124,90,0.16);
+    transform:translateY(-1px);
+  }
+  .page-link:hover .page-link-kicker,
+  .page-link:hover .page-link-title { color:#fff; }
+  .page-link:hover::after { transform:translateX(2px); }
+
+  /* WINNER STRIP */
+  .winner-strip {
+    background:var(--green-light);
+    border:1px solid rgba(42,124,90,0.2);
+    border-radius:12px;
+    padding:16px 24px;
+    margin-bottom:36px;
+    display:flex; align-items:center; gap:14px;
+    font-size:14px;
+  }
+  .winner-strip strong { color:var(--green); font-family:'DM Mono',monospace; font-size:12px; letter-spacing:0.05em; }
+  .winner-strip span { color:var(--muted); }
+
+  /* SORT HINT */
+  .sort-hint {
+    display:flex; align-items:center; gap:8px;
+    font-size:12px; color:var(--muted);
+    margin-bottom:20px;
+    font-family:'DM Mono',monospace;
+  }
+  .sort-hint::before { content:'↕'; font-size:14px; }
+
+  /* TABLE WRAP */
+  .table-outer { overflow-x:auto; border-radius:16px; border:1px solid var(--border-strong); box-shadow:0 2px 24px rgba(0,0,0,0.06); }
+
+  table { width:100%; border-collapse:collapse; min-width:900px; background:var(--surface); }
+
+  /* HEADER ROW */
+  thead tr { border-bottom:2px solid var(--border-strong); }
+  thead th {
+    padding:0;
+    background:var(--surface);
+    position:sticky; top:0; z-index:10;
+  }
+  .th-inner {
+    display:flex; flex-direction:column;
+    padding:18px 20px 16px;
+    cursor:pointer;
+    user-select:none;
+    transition:background 0.15s;
+    gap:4px;
+    border-right:1px solid var(--border);
+    height:100%;
+  }
+  thead th:last-child .th-inner { border-right:none; }
+  .th-inner:hover { background:#f9f6f0; }
+  .th-inner.sorted { background:var(--green-light); }
+  .th-label {
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+    line-height:1.4;
+  }
+  .th-inner.sorted .th-label { color:var(--green); }
+  .th-sort {
+    font-size:16px;
+    color:var(--border-strong);
+    line-height:1;
+    transition:color 0.15s, transform 0.2s;
+  }
+  .th-inner.sorted .th-sort { color:var(--green); }
+  .th-inner.sorted.asc .th-sort { transform:rotate(180deg); }
+  .th-best {
+    font-size:9px;
+    color:var(--muted);
+    font-family:'DM Sans',sans-serif;
+    opacity:0.7;
+  }
+  .th-inner.sorted .th-best { color:var(--green); opacity:0.8; }
+
+  /* BODY ROWS */
+  tbody tr {
+    border-bottom:1px solid var(--border);
+    transition:background 0.12s;
+    opacity:0;
+    transform:translateY(6px);
+    animation:rowIn 0.3s forwards;
+  }
+  tbody tr:last-child { border-bottom:none; }
+  tbody tr:hover { background:#faf8f4; }
+  tbody tr.is-winner { background:var(--green-light); }
+  tbody tr.is-winner:hover { background:#dff0e8; }
+
+  @keyframes rowIn {
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  td {
+    padding:20px 20px;
+    vertical-align:top;
+    border-right:1px solid var(--border);
+    font-size:14px;
+  }
+  td:last-child { border-right:none; }
+
+  /* OPTION LABEL CELL */
+  .opt-cell { min-width:110px; }
+  .opt-label {
+    font-family:'Playfair Display',serif;
+    font-size:28px;
+    font-weight:900;
+    line-height:1;
+    color:var(--text);
+    margin-bottom:6px;
+  }
+  .opt-badge {
+    display:inline-block;
+    font-family:'DM Mono',monospace;
+    font-size:9px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    padding:3px 8px;
+    border-radius:4px;
+    font-weight:500;
+  }
+  .badge-winner { background:var(--green-mid); color:var(--green); border:1px solid rgba(42,124,90,0.25); }
+  .badge-runner { background:#f0ede6; color:var(--muted); border:1px solid var(--border); }
+
+  /* INGREDIENTS CELL */
+  .ingredients-cell { max-width:220px; }
+  .ing-item {
+    display:inline-block;
+    background:#f0ede6;
+    border:1px solid var(--border);
+    border-radius:5px;
+    font-size:11px;
+    padding:2px 7px;
+    margin:2px 2px 2px 0;
+    color:var(--text);
+    font-family:'DM Mono',monospace;
+    white-space:nowrap;
+  }
+  .is-winner .ing-item { background:rgba(42,124,90,0.08); border-color:rgba(42,124,90,0.2); }
+
+  /* METRIC CELLS */
+  .metric-cell { white-space:nowrap; }
+  .metric-val {
+    font-family:'DM Mono',monospace;
+    font-size:18px;
+    font-weight:500;
+    line-height:1.2;
+    color:var(--text);
+  }
+  .metric-unit { font-size:11px; color:var(--muted); margin-left:2px; }
+  .metric-bar { height:3px; border-radius:999px; margin-top:8px; background:var(--surface2); overflow:hidden; width:80px; }
+  .metric-bar-fill { height:100%; border-radius:999px; transition:width 0.5s cubic-bezier(.4,0,.2,1); }
+
+  .val-best .metric-val { color:var(--green); }
+  .val-worst .metric-val { color:var(--amber); }
+
+  /* RATING CELL */
+  .rating-cell { min-width:100px; }
+  .rating-ring-wrap { display:flex; align-items:center; gap:12px; }
+  .ring-svg { flex-shrink:0; }
+  .rating-pct {
+    font-family:'Playfair Display',serif;
+    font-size:22px;
+    font-weight:700;
+  }
+
+  /* JUSTIFICATION CELL */
+  .just-cell { min-width:240px; max-width:280px; }
+  .just-text {
+    font-size:12.5px;
+    color:var(--muted);
+    line-height:1.65;
+    font-weight:300;
+  }
+  .just-text strong { color:var(--text); font-weight:500; }
+
+  /* RESET BTN */
+  .controls { display:flex; gap:10px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+  .reset-btn {
+    font-family:'DM Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    border-radius:8px;
+    padding:8px 16px;
+    cursor:pointer;
+    color:var(--muted);
+    transition:all 0.15s;
+  }
+  .reset-btn:hover { background:var(--text); color:var(--bg); border-color:var(--text); }
+
+  .active-sort-label {
+    font-family:'DM Mono',monospace;
+    font-size:11px;
+    color:var(--green);
+    letter-spacing:0.05em;
+  }
+  .active-sort-label span { color:var(--muted); }
+
+  footer { margin-top:56px; padding-top:20px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); font-family:'DM Mono',monospace; }
+
+  @media (max-width: 720px) {
+    .page { padding:0 20px 64px; }
+    header { padding-top:48px; }
+    .header-row { flex-direction:column; gap:22px; }
+    .page-link { align-self:flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="header-row">
+      <div>
+        <div class="eyebrow">Protein Blend Analysis · 50g Serving</div>
+        <h1>Option A vs <em>B</em> vs C</h1>
+        <p class="subtitle">Every metric calculated per 50g serving. Click any column header to sort best → worst. Designed for one blend, made once, used daily.</p>
+      </div>
+      <a class="page-link" href="protein_comparison.html" aria-label="Open protein value tracker page">
+        <span>
+          <span class="page-link-kicker">Also available</span>
+          <span class="page-link-title">Open Value Tracker</span>
+        </span>
+      </a>
+    </div>
+  </header>
+
+  <div class="winner-strip">
+    <span>🏆</span>
+    <div>
+      <strong>Recommended: Option B</strong>&nbsp;&nbsp;
+      <span>Best cost-to-completeness balance. Wins on overall rating at 84% — protein drop vs A is negligible (0.25g), micronutrient gain is not.</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="reset-btn" id="resetBtn">↺ Reset order</button>
+    <div class="active-sort-label" id="sortLabel"><span>Click a column to sort</span></div>
+  </div>
+
+  <div class="sort-hint">Click any column header to sort best → worst</div>
+
+  <div class="table-outer">
+    <table id="mainTable">
+      <thead>
+        <tr id="headerRow"></tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <footer>* Whey base assumed at ~25g protein, ~120 kcal per scoop. All blend metrics are for the 50g dry addition only. Prices based on Indian bulk/retail market 2025.</footer>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const options = [
+  {
+    id: 'A',
+    winner: false,
+    ingredients: ['Peanut powder 60%','Sattu 30%','Flaxseed 10%'],
+    proteinPerRupee: 1.39,
+    proteinPerServing: 18.9,
+    caloriesPerServing: 189,
+    costPerServing: 13.6,
+    proteinPerKcal: 0.100,
+    micronutrientRating: 42,
+    qualityRating: 70,
+    overallRating: 76,
+    justification: '<strong>Wins every protein metric cleanly.</strong> But at 21 with daily heavy training, sweating out zinc and magnesium without replacing them quietly degrades testosterone synthesis, sleep quality, and recovery — all of which directly affect fat%. Excellent short-term but incomplete long-term.'
+  },
+  {
+    id: 'B',
+    winner: true,
+    ingredients: ['Peanut powder 55%','Sattu 25%','Flaxseed 10%','Pumpkin seeds 10%'],
+    proteinPerRupee: 1.07,
+    proteinPerServing: 18.65,
+    caloriesPerServing: 199,
+    costPerServing: 17.5,
+    proteinPerKcal: 0.094,
+    micronutrientRating: 62,
+    qualityRating: 73,
+    overallRating: 84,
+    justification: 'The <strong>₹3.9/day extra over A</strong> buys zinc (~1.5mg, ~14% RDA) and magnesium (~65mg from pumpkin) — real numbers that matter for your hormonal profile. Protein drop is only 0.25g per serving, completely negligible. Best cost-to-completeness balance for your specific goal. <strong>Make this one.</strong>'
+  },
+  {
+    id: 'C',
+    winner: false,
+    ingredients: ['Peanut powder 50%','Sattu 25%','Flaxseed 10%','Pumpkin seeds 8%','Moringa 7%'],
+    proteinPerRupee: 1.07,
+    proteinPerServing: 17.97,
+    caloriesPerServing: 197,
+    costPerServing: 16.8,
+    proteinPerKcal: 0.091,
+    micronutrientRating: 74,
+    qualityRating: 76,
+    overallRating: 79,
+    justification: 'Moringa at 3.5g/serving is where this falls down. <strong>Clinical antioxidant benefits require 5-7g minimum</strong> to be meaningful. At 3.5g you\'re getting a trace amount, paying ₹1.1/serving for it, and losing 0.68g protein vs B. Micronutrient gain over B is real but marginal. Would make sense only if you train twice a day — not your current situation.'
+  }
+];
+
+// ── COLUMN DEFINITIONS ────────────────────────────────────────────────
+// higherIsBetter: true = sort desc for "best", false = sort asc
+const columns = [
+  { key:'id',               label:'Option',          unit:'',      higherIsBetter:null,  noSort:true  },
+  { key:'ingredients',      label:'Ingredients\n& Ratio', unit:'', higherIsBetter:null,  noSort:true  },
+  { key:'proteinPerRupee',  label:'Protein\nper ₹',  unit:'g/₹',   higherIsBetter:true,  bestLabel:'higher = better' },
+  { key:'proteinPerServing',label:'Protein\nper Serving', unit:'g', higherIsBetter:true, bestLabel:'higher = better' },
+  { key:'caloriesPerServing',label:'Calories\nper Serving',unit:'kcal',higherIsBetter:false,bestLabel:'lower = better'},
+  { key:'costPerServing',   label:'Cost\nper Serving',unit:'₹',    higherIsBetter:false, bestLabel:'lower = better' },
+  { key:'proteinPerKcal',   label:'Protein\nper kcal',unit:'g/kcal',higherIsBetter:true, bestLabel:'higher = better'},
+  { key:'micronutrientRating',label:'Micronutrient\nRating',unit:'%',higherIsBetter:true,bestLabel:'higher = better'},
+  { key:'qualityRating',    label:'Quality of\nNutrients',unit:'%', higherIsBetter:true, bestLabel:'higher = better'},
+  { key:'overallRating',    label:'Overall\nRating',   unit:'%',   higherIsBetter:true,  bestLabel:'higher = better'},
+  { key:'justification',    label:'Justification\nfor Rating', unit:'', higherIsBetter:null, noSort:true }
+];
+
+// ── RANGES FOR BAR SCALING ────────────────────────────────────────────
+function getRange(key) {
+  const vals = options.map(o => o[key]).filter(v => typeof v === 'number');
+  return { min: Math.min(...vals), max: Math.max(...vals) };
+}
+
+function barPct(val, key, higherIsBetter) {
+  const { min, max } = getRange(key);
+  if (max === min) return 100;
+  const pct = (val - min) / (max - min) * 100;
+  return higherIsBetter ? pct : 100 - pct;
+}
+
+function barColor(key, val, higherIsBetter) {
+  const pct = barPct(val, key, higherIsBetter);
+  if (pct >= 66) return '#2a7c5a';
+  if (pct >= 33) return '#e0a840';
+  return '#b85c00';
+}
+
+function isBest(key, val, higherIsBetter) {
+  const vals = options.map(o => o[key]);
+  return higherIsBetter ? val === Math.max(...vals) : val === Math.min(...vals);
+}
+function isWorst(key, val, higherIsBetter) {
+  const vals = options.map(o => o[key]);
+  return higherIsBetter ? val === Math.min(...vals) : val === Math.max(...vals);
+}
+
+// Ring SVG
+function ringsvg(pct, color) {
+  const r = 20, cx = 24, cy = 24, stroke = 4;
+  const circ = 2 * Math.PI * r;
+  const dash = (pct / 100) * circ;
+  return `<svg class="ring-svg" width="48" height="48" viewBox="0 0 48 48">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e8e4dc" stroke-width="${stroke}"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
+      stroke-dasharray="${dash} ${circ}" stroke-dashoffset="${circ * 0.25}"
+      stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
+  </svg>`;
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────
+let currentSort = null; // { colIdx, asc }
+let currentData = [...options];
+
+function renderHeader() {
+  const hr = document.getElementById('headerRow');
+  hr.innerHTML = '';
+  columns.forEach((col, i) => {
+    const th = document.createElement('th');
+    const inner = document.createElement('div');
+    inner.className = 'th-inner' + (currentSort?.colIdx === i ? ' sorted' + (currentSort.asc ? ' asc' : '') : '');
+    const labelLines = col.label.split('\n');
+    inner.innerHTML = `
+      <div class="th-label">${labelLines.join('<br>')}</div>
+      ${!col.noSort ? `<div class="th-sort">↓</div><div class="th-best">${col.bestLabel||''}</div>` : ''}
+    `;
+    if (!col.noSort) {
+      inner.addEventListener('click', () => sortBy(i));
+    }
+    th.appendChild(inner);
+    hr.appendChild(th);
+  });
+}
+
+function renderBody() {
+  const tb = document.getElementById('tbody');
+  tb.innerHTML = '';
+  currentData.forEach((opt, rowI) => {
+    const tr = document.createElement('tr');
+    if (opt.winner) tr.classList.add('is-winner');
+    tr.style.animationDelay = (rowI * 0.06) + 's';
+
+    columns.forEach((col, colI) => {
+      const td = document.createElement('td');
+
+      if (col.key === 'id') {
+        td.className = 'opt-cell';
+        td.innerHTML = `
+          <div class="opt-label">Opt. ${opt.id}</div>
+          <span class="opt-badge ${opt.winner ? 'badge-winner' : 'badge-runner'}">${opt.winner ? '★ Recommended' : 'Alternative'}</span>
+        `;
+      }
+      else if (col.key === 'ingredients') {
+        td.className = 'ingredients-cell';
+        td.innerHTML = opt.ingredients.map(i => `<span class="ing-item">${i}</span>`).join('');
+      }
+      else if (col.key === 'justification') {
+        td.className = 'just-cell';
+        td.innerHTML = `<div class="just-text">${opt.justification}</div>`;
+      }
+      else if (col.key === 'overallRating' || col.key === 'micronutrientRating' || col.key === 'qualityRating') {
+        td.className = 'rating-cell';
+        const val = opt[col.key];
+        const color = val >= 80 ? '#2a7c5a' : val >= 70 ? '#e0a840' : '#b85c00';
+        td.innerHTML = `
+          <div class="rating-ring-wrap">
+            ${ringsvg(val, color)}
+            <span class="rating-pct" style="color:${color}">${val}%</span>
+          </div>
+        `;
+      }
+      else {
+        const val = opt[col.key];
+        const best = isBest(col.key, val, col.higherIsBetter);
+        const worst = isWorst(col.key, val, col.higherIsBetter);
+        td.className = `metric-cell${best ? ' val-best' : worst ? ' val-worst' : ''}`;
+        const pct = barPct(val, col.key, col.higherIsBetter);
+        const bc = barColor(col.key, val, col.higherIsBetter);
+        const displayVal = col.unit === '₹' ? `₹${val}` : val;
+        const unitDisplay = col.unit === '₹' ? '' : col.unit;
+        td.innerHTML = `
+          <div class="metric-val">${displayVal}<span class="metric-unit">${unitDisplay}</span></div>
+          <div class="metric-bar"><div class="metric-bar-fill" style="width:${pct.toFixed(1)}%;background:${bc}"></div></div>
+        `;
+      }
+
+      tr.appendChild(td);
+    });
+
+    tb.appendChild(tr);
+  });
+}
+
+function sortBy(colIdx) {
+  const col = columns[colIdx];
+  if (col.noSort) return;
+
+  // Toggle: if same col clicked again, flip direction
+  let asc;
+  if (currentSort?.colIdx === colIdx) {
+    asc = !currentSort.asc;
+  } else {
+    // Default: best first
+    // higher=better → desc (asc=false), lower=better → asc (asc=true)
+    asc = !col.higherIsBetter;
+  }
+  currentSort = { colIdx, asc };
+
+  currentData = [...options].sort((a, b) => {
+    const av = a[col.key], bv = b[col.key];
+    return asc ? av - bv : bv - av;
+  });
+
+  const dirLabel = asc ? '↑ ascending' : '↓ descending';
+  document.getElementById('sortLabel').innerHTML = `Sorted by <strong>${col.label.replace('\n', ' ')}</strong> — ${dirLabel}`;
+
+  renderHeader();
+  renderBody();
+}
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  currentSort = null;
+  currentData = [...options];
+  document.getElementById('sortLabel').innerHTML = '<span>Click a column to sort</span>';
+  renderHeader();
+  renderBody();
+});
+
+// Initial render
+renderHeader();
+renderBody();
+</script>
+</body>
+</html>
