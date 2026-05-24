@@ -396,6 +396,42 @@
     font-weight:700;
   }
 
+  .profile-cell { min-width:160px; }
+  .profile-stack {
+    display:grid;
+    gap:8px;
+    min-width:135px;
+  }
+  .profile-row {
+    display:grid;
+    grid-template-columns:54px 44px 1fr;
+    align-items:center;
+    gap:8px;
+  }
+  .profile-label {
+    font-family:'DM Mono',monospace;
+    font-size:9px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .profile-val {
+    font-family:'Playfair Display',serif;
+    font-size:18px;
+    font-weight:700;
+    line-height:1;
+  }
+  .profile-bar {
+    height:3px;
+    border-radius:999px;
+    background:var(--surface2);
+    overflow:hidden;
+  }
+  .profile-fill {
+    height:100%;
+    border-radius:999px;
+  }
+
   /* JUSTIFICATION CELL */
   .just-cell { min-width:240px; max-width:280px; }
   .just-text {
@@ -532,7 +568,7 @@
     }
     thead th:nth-child(1),
     thead th:nth-child(2),
-    thead th:nth-child(11) {
+    thead th:nth-child(9) {
       display:none;
     }
     .th-inner {
@@ -594,13 +630,12 @@
     td:nth-child(4)::before { content:'Protein'; }
     td:nth-child(5)::before { content:'Calories'; }
     td:nth-child(6)::before { content:'Cost'; }
-    td:nth-child(7)::before { content:'Protein / kcal'; }
-    td:nth-child(8)::before { content:'Micros'; }
-    td:nth-child(9)::before { content:'Quality'; }
-    td:nth-child(10)::before { content:'Overall'; }
-    td:nth-child(11)::before { content:'Why'; }
+    td:nth-child(7)::before { content:'Nutrients'; }
+    td:nth-child(8)::before { content:'Overall'; }
+    td:nth-child(9)::before { content:'Why'; }
     .opt-cell,
     .ingredients-cell,
+    .profile-cell,
     .rating-cell,
     .just-cell {
       min-width:0;
@@ -631,6 +666,9 @@
       gap:10px;
     }
     .rating-pct { font-size:20px; }
+    .profile-row {
+      grid-template-columns:58px 42px minmax(58px, 1fr);
+    }
     .just-cell {
       grid-template-columns:1fr;
       gap:6px;
@@ -740,7 +778,6 @@ const options = [
     proteinPerServing: 18.9,
     caloriesPerServing: 189,
     costPerServing: 13.6,
-    proteinPerKcal: 0.100,
     micronutrientRating: 42,
     qualityRating: 70,
     overallRating: 76,
@@ -754,7 +791,6 @@ const options = [
     proteinPerServing: 18.65,
     caloriesPerServing: 199,
     costPerServing: 17.5,
-    proteinPerKcal: 0.094,
     micronutrientRating: 62,
     qualityRating: 73,
     overallRating: 84,
@@ -768,7 +804,6 @@ const options = [
     proteinPerServing: 17.97,
     caloriesPerServing: 197,
     costPerServing: 16.8,
-    proteinPerKcal: 0.091,
     micronutrientRating: 74,
     qualityRating: 76,
     overallRating: 79,
@@ -785,16 +820,21 @@ const columns = [
   { key:'proteinPerServing',label:'Protein\nper Serving', unit:'g', higherIsBetter:true, bestLabel:'higher = better' },
   { key:'caloriesPerServing',label:'Calories\nper Serving',unit:'kcal',higherIsBetter:false,bestLabel:'lower = better'},
   { key:'costPerServing',   label:'Cost\nper Serving',unit:'₹',    higherIsBetter:false, bestLabel:'lower = better' },
-  { key:'proteinPerKcal',   label:'Protein\nper kcal',unit:'g/kcal',higherIsBetter:true, bestLabel:'higher = better'},
-  { key:'micronutrientRating',label:'Micronutrient\nRating',unit:'%',higherIsBetter:true,bestLabel:'higher = better'},
-  { key:'qualityRating',    label:'Quality of\nNutrients',unit:'%', higherIsBetter:true, bestLabel:'higher = better'},
+  { key:'nutrientProfile',  label:'Nutrient\nProfile',unit:'%',    higherIsBetter:true,  bestLabel:'avg of both'},
   { key:'overallRating',    label:'Overall\nRating',   unit:'%',   higherIsBetter:true,  bestLabel:'higher = better'},
   { key:'justification',    label:'Justification\nfor Rating', unit:'', higherIsBetter:null, noSort:true }
 ];
 
 // ── RANGES FOR BAR SCALING ────────────────────────────────────────────
+function metricValue(option, key) {
+  if (key === 'nutrientProfile') {
+    return (option.micronutrientRating + option.qualityRating) / 2;
+  }
+  return option[key];
+}
+
 function getRange(key) {
-  const vals = options.map(o => o[key]).filter(v => typeof v === 'number');
+  const vals = options.map(o => metricValue(o, key)).filter(v => typeof v === 'number');
   return { min: Math.min(...vals), max: Math.max(...vals) };
 }
 
@@ -813,11 +853,11 @@ function barColor(key, val, higherIsBetter) {
 }
 
 function isBest(key, val, higherIsBetter) {
-  const vals = options.map(o => o[key]);
+  const vals = options.map(o => metricValue(o, key));
   return higherIsBetter ? val === Math.max(...vals) : val === Math.min(...vals);
 }
 function isWorst(key, val, higherIsBetter) {
-  const vals = options.map(o => o[key]);
+  const vals = options.map(o => metricValue(o, key));
   return higherIsBetter ? val === Math.min(...vals) : val === Math.max(...vals);
 }
 
@@ -884,7 +924,28 @@ function renderBody() {
         td.className = 'just-cell';
         td.innerHTML = `<div class="just-text">${opt.justification}</div>`;
       }
-      else if (col.key === 'overallRating' || col.key === 'micronutrientRating' || col.key === 'qualityRating') {
+      else if (col.key === 'nutrientProfile') {
+        td.className = 'profile-cell';
+        const micro = opt.micronutrientRating;
+        const quality = opt.qualityRating;
+        const microColor = micro >= 80 ? 'var(--bar-green)' : micro >= 70 ? 'var(--bar-amber)' : 'var(--bar-low)';
+        const qualityColor = quality >= 80 ? 'var(--bar-green)' : quality >= 70 ? 'var(--bar-amber)' : 'var(--bar-low)';
+        td.innerHTML = `
+          <div class="profile-stack">
+            <div class="profile-row">
+              <span class="profile-label">Micros</span>
+              <span class="profile-val" style="color:${microColor}">${micro}%</span>
+              <span class="profile-bar"><span class="profile-fill" style="width:${micro}%;background:${microColor}"></span></span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-label">Quality</span>
+              <span class="profile-val" style="color:${qualityColor}">${quality}%</span>
+              <span class="profile-bar"><span class="profile-fill" style="width:${quality}%;background:${qualityColor}"></span></span>
+            </div>
+          </div>
+        `;
+      }
+      else if (col.key === 'overallRating') {
         td.className = 'rating-cell';
         const val = opt[col.key];
         const color = val >= 80 ? 'var(--bar-green)' : val >= 70 ? 'var(--bar-amber)' : 'var(--bar-low)';
@@ -896,7 +957,7 @@ function renderBody() {
         `;
       }
       else {
-        const val = opt[col.key];
+        const val = metricValue(opt, col.key);
         const best = isBest(col.key, val, col.higherIsBetter);
         const worst = isWorst(col.key, val, col.higherIsBetter);
         td.className = `metric-cell${best ? ' val-best' : worst ? ' val-worst' : ''}`;
@@ -933,7 +994,7 @@ function sortBy(colIdx) {
   currentSort = { colIdx, asc };
 
   currentData = [...options].sort((a, b) => {
-    const av = a[col.key], bv = b[col.key];
+    const av = metricValue(a, col.key), bv = metricValue(b, col.key);
     return asc ? av - bv : bv - av;
   });
 
