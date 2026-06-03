@@ -395,41 +395,23 @@
     font-size:22px;
     font-weight:700;
   }
-
-  .profile-cell { min-width:160px; }
-  .profile-stack {
-    display:grid;
-    gap:8px;
-    min-width:135px;
-  }
-  .profile-row {
-    display:grid;
-    grid-template-columns:54px 44px 1fr;
-    align-items:center;
-    gap:8px;
-  }
-  .profile-label {
-    font-family:'DM Mono',monospace;
-    font-size:9px;
-    letter-spacing:0.1em;
-    text-transform:uppercase;
+  .rating-note {
+    margin-top:14px;
+    max-width:150px;
     color:var(--muted);
+    font-size:11px;
+    line-height:1.45;
+    font-weight:300;
   }
-  .profile-val {
-    font-family:'Playfair Display',serif;
-    font-size:18px;
-    font-weight:700;
-    line-height:1;
-  }
-  .profile-bar {
-    height:3px;
-    border-radius:999px;
-    background:var(--surface2);
-    overflow:hidden;
-  }
-  .profile-fill {
-    height:100%;
-    border-radius:999px;
+  .rating-note strong {
+    display:block;
+    margin-bottom:3px;
+    color:var(--text);
+    font-family:'DM Mono',monospace;
+    font-size:8.5px;
+    font-weight:500;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
   }
 
   /* JUSTIFICATION CELL */
@@ -442,8 +424,85 @@
   }
   .just-text strong { color:var(--text); font-weight:500; }
 
+  .blend-notes {
+    display:grid;
+    grid-template-columns:1.25fr 0.75fr;
+    gap:14px;
+    margin-top:24px;
+  }
+  .blend-note {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px 18px;
+    box-shadow:0 2px 20px var(--table-shadow);
+  }
+  .blend-note strong {
+    display:block;
+    margin-bottom:8px;
+    color:var(--green);
+    font-family:'DM Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .blend-note p,
+  .blend-note li {
+    color:var(--muted);
+    font-size:12.5px;
+    line-height:1.65;
+  }
+  .blend-note ul {
+    display:grid;
+    gap:4px;
+    list-style:none;
+  }
+  .blend-note li::before {
+    content:'';
+    display:inline-block;
+    width:6px;
+    height:6px;
+    margin-right:8px;
+    border-radius:50%;
+    background:var(--green);
+    vertical-align:1px;
+  }
+
   /* RESET BTN */
   .controls { display:flex; gap:10px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+  .serving-control {
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:7px 10px;
+    border:1px solid var(--green-border-soft);
+    border-radius:8px;
+    background:var(--green-light);
+    color:var(--muted);
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .serving-control input {
+    width:58px;
+    border:1px solid var(--border-strong);
+    border-radius:6px;
+    background:var(--surface);
+    color:var(--text);
+    font:inherit;
+    letter-spacing:0;
+    padding:5px 7px;
+    text-align:right;
+  }
+  .serving-control input:focus {
+    outline:2px solid var(--green-border);
+    outline-offset:1px;
+  }
+  .serving-unit {
+    color:var(--green);
+    letter-spacing:0.05em;
+  }
   .reset-btn {
     font-family:'DM Mono',monospace;
     font-size:11px;
@@ -517,6 +576,11 @@
       gap:9px;
       margin-bottom:14px;
     }
+    .serving-control {
+      width:100%;
+      justify-content:space-between;
+      padding:9px 11px;
+    }
     .reset-btn {
       padding:8px 12px;
       font-size:10px;
@@ -568,7 +632,7 @@
     }
     thead th:nth-child(1),
     thead th:nth-child(2),
-    thead th:nth-child(9) {
+    thead th:nth-child(10) {
       display:none;
     }
     .th-inner {
@@ -630,12 +694,12 @@
     td:nth-child(4)::before { content:'Protein'; }
     td:nth-child(5)::before { content:'Calories'; }
     td:nth-child(6)::before { content:'Cost'; }
-    td:nth-child(7)::before { content:'Nutrients'; }
-    td:nth-child(8)::before { content:'Overall'; }
-    td:nth-child(9)::before { content:'Why'; }
+    td:nth-child(7)::before { content:'Micros'; }
+    td:nth-child(8)::before { content:'Quality'; }
+    td:nth-child(9)::before { content:'Rating'; }
+    td:nth-child(10)::before { content:'Notes'; }
     .opt-cell,
     .ingredients-cell,
-    .profile-cell,
     .rating-cell,
     .just-cell {
       min-width:0;
@@ -666,8 +730,11 @@
       gap:10px;
     }
     .rating-pct { font-size:20px; }
-    .profile-row {
-      grid-template-columns:58px 42px minmax(58px, 1fr);
+    .rating-note {
+      max-width:none;
+      margin-top:8px;
+      font-size:11px;
+      line-height:1.45;
     }
     .just-cell {
       grid-template-columns:1fr;
@@ -676,6 +743,15 @@
     .just-text {
       font-size:12px;
       line-height:1.6;
+    }
+    .blend-notes {
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:18px;
+    }
+    .blend-note {
+      padding:14px 15px;
+      border-radius:10px;
     }
     footer {
       margin-top:34px;
@@ -690,9 +766,9 @@
   <header>
     <div class="header-row">
       <div>
-        <div class="eyebrow">Protein Blend Analysis · 50g Serving</div>
-        <h1>Option A vs <em>B</em> vs C</h1>
-        <p class="subtitle">Every metric calculated per 50g serving. Click any column header to sort best → worst. Designed for one blend, made once, used daily.</p>
+        <div class="eyebrow">Protein Blend Analysis · Adjustable Scoop</div>
+        <h1>3-Blend Comparison · Built for Daily Use</h1>
+        <p class="subtitle">Serving metrics default to 50g and update with your scoop size. Click any column header to sort best → worst.</p>
       </div>
       <div class="header-actions">
         <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch color theme">Dark mode</button>
@@ -710,12 +786,17 @@
   <div class="winner-strip">
     <span>🏆</span>
     <div>
-      <strong>Recommended: Option B</strong>&nbsp;&nbsp;
-      <span>Best cost-to-completeness balance. Wins on overall rating at 84% — protein drop vs A is negligible (0.25g), micronutrient gain is not.</span>
+      <strong>Recommended: Option A</strong>&nbsp;&nbsp;
+      <span>Complete amino profile, effective micronutrient coverage, and the highest quality score in this analysis. Hemp and moringa are the difference-makers.</span>
     </div>
   </div>
 
   <div class="controls">
+    <label class="serving-control" for="servingSizeInput">
+      <span>1 scoop</span>
+      <input id="servingSizeInput" type="number" min="1" max="200" step="1" value="50" inputmode="decimal" aria-label="One scoop size in grams">
+      <span class="serving-unit">g</span>
+    </label>
     <button class="reset-btn" id="resetBtn">↺ Reset order</button>
     <div class="active-sort-label" id="sortLabel"><span>Click a column to sort</span></div>
   </div>
@@ -731,7 +812,22 @@
     </table>
   </div>
 
-  <footer>* Whey base assumed at ~25g protein, ~120 kcal per scoop. All blend metrics are for the 50g dry addition only. Prices based on Indian bulk/retail market 2025.</footer>
+  <div class="blend-notes">
+    <div class="blend-note">
+      <strong>How to choose</strong>
+      <ul>
+        <li>Pick A if you want the most nutritionally complete blend and are fine ordering online — it wins on every quality metric.</li>
+        <li>Pick B if moringa's taste bothers you or you want fewer ingredients to manage — still a strong daily blend with a solid amino profile.</li>
+        <li>Pick C only during tight budget months — it wins on cost and raw protein numbers, but lacks the micro support that heavy daily training demands long-term.</li>
+      </ul>
+    </div>
+    <div class="blend-note">
+      <strong>Batch tip</strong>
+      <p>Grind the full A batch once for about 30 seconds and store it airtight. Hemp, moringa, sesame, and pumpkin distribute evenly, and the shake stays less gritty.</p>
+    </div>
+  </div>
+
+  <footer>* Serving metrics scale from the 50g dry-blend baseline. Prices based on Indian bulk/retail market 2025.</footer>
 </div>
 
 <script>
@@ -772,7 +868,40 @@ updateThemeToggle();
 const options = [
   {
     id: 'A',
+    winner: true,
+    badge: '★ Recommended',
+    ingredients: ['Peanut powder 40%','Sattu 20%','Hemp 12%','Flaxseed 8%','Pumpkin seeds 8%','Sesame 7%','Moringa 5%'],
+    proteinPerRupee: 0.97,
+    proteinPerServing: 16.9,
+    caloriesPerServing: 207,
+    costPerServing: 17.5,
+    micronutrientRating: 85,
+    qualityRating: 90,
+    overallRating: 92,
+    micronutrientNote: 'Zinc, magnesium, calcium, iron plus trace A/K from moringa. Best spread across 7 sources.',
+    qualityNote: 'Hemp completes the amino profile; sesame adds a second methionine patch.',
+    justification: 'The most complete blend in this analysis. Hemp is the only plant-complete protein here — it fixes the methionine-lysine gap that peanut and sattu share as legumes. Moringa reaches its clinical threshold at 2.5g per serving, making it genuinely effective rather than decorative. Best micro and quality scores by a wide margin. ₹3.9/day more than Option C — fully justified for daily training use. <strong>Make this one.</strong>'
+  },
+  {
+    id: 'B',
     winner: false,
+    badge: '★ Practical',
+    ingredients: ['Peanut powder 55%','Sattu 25%','Flaxseed 10%','Pumpkin seeds 5%','Sesame 5%'],
+    proteinPerRupee: 1.19,
+    proteinPerServing: 18.3,
+    caloriesPerServing: 193,
+    costPerServing: 15.4,
+    micronutrientRating: 68,
+    qualityRating: 80,
+    overallRating: 88,
+    micronutrientNote: 'Pumpkin and sesame lift zinc and magnesium; calcium appears for the first time.',
+    qualityNote: 'Sesame targets the methionine gap; pumpkin adds BCAA support.',
+    justification: 'Best choice if moringa\'s mild grassy taste in a cold shake bothers you, or you prefer a simpler 5-ingredient batch to prep. Sesame seeds directly patch the methionine gap that peanut and sattu share as legumes, and add calcium — a rare micro in plant-only blends. Strong amino profile, most cost-efficient among the non-budget options. A genuine daily blend.'
+  },
+  {
+    id: 'C',
+    winner: false,
+    badge: 'Budget',
     ingredients: ['Peanut powder 60%','Sattu 30%','Flaxseed 10%'],
     proteinPerRupee: 1.39,
     proteinPerServing: 18.9,
@@ -781,33 +910,9 @@ const options = [
     micronutrientRating: 42,
     qualityRating: 70,
     overallRating: 76,
-    justification: '<strong>Wins every protein metric cleanly.</strong> But at 21 with daily heavy training, sweating out zinc and magnesium without replacing them quietly degrades testosterone synthesis, sleep quality, and recovery — all of which directly affect fat%. Excellent short-term but incomplete long-term.'
-  },
-  {
-    id: 'B',
-    winner: true,
-    ingredients: ['Peanut powder 55%','Sattu 25%','Flaxseed 10%','Pumpkin seeds 10%'],
-    proteinPerRupee: 1.07,
-    proteinPerServing: 18.65,
-    caloriesPerServing: 199,
-    costPerServing: 17.5,
-    micronutrientRating: 62,
-    qualityRating: 73,
-    overallRating: 84,
-    justification: 'The <strong>₹3.9/day extra over A</strong> buys zinc (~1.5mg, ~14% RDA) and magnesium (~65mg from pumpkin) — real numbers that matter for your hormonal profile. Protein drop is only 0.25g per serving, completely negligible. Best cost-to-completeness balance for your specific goal. <strong>Make this one.</strong>'
-  },
-  {
-    id: 'C',
-    winner: false,
-    ingredients: ['Peanut powder 50%','Sattu 25%','Flaxseed 10%','Pumpkin seeds 8%','Moringa 7%'],
-    proteinPerRupee: 1.07,
-    proteinPerServing: 17.97,
-    caloriesPerServing: 197,
-    costPerServing: 16.8,
-    micronutrientRating: 74,
-    qualityRating: 76,
-    overallRating: 79,
-    justification: 'Moringa at 3.5g/serving is where this falls down. <strong>Clinical antioxidant benefits require 5-7g minimum</strong> to be meaningful. At 3.5g you\'re getting a trace amount, paying ₹1.1/serving for it, and losing 0.68g protein vs B. Micronutrient gain over B is real but marginal. Would make sense only if you train twice a day — not your current situation.'
+    micronutrientNote: 'Mostly peanut, sattu, and flax. Some magnesium; weak zinc and almost no calcium.',
+    qualityNote: 'High protein volume, but peanut and sattu share the same methionine/cysteine limit.',
+    justification: 'Wins every single protein and cost metric — cleanest numbers on paper. The tradeoff is real: zero micro support means zinc and magnesium are steadily depleted under heavy training. Quietly degrades testosterone synthesis, sleep quality, and recovery over weeks. Valid only during tight budget months — not as a permanent choice.'
   }
 ];
 
@@ -820,17 +925,31 @@ const columns = [
   { key:'proteinPerServing',label:'Protein\nper Serving', unit:'g', higherIsBetter:true, bestLabel:'higher = better' },
   { key:'caloriesPerServing',label:'Calories\nper Serving',unit:'kcal',higherIsBetter:false,bestLabel:'lower = better'},
   { key:'costPerServing',   label:'Cost\nper Serving',unit:'₹',    higherIsBetter:false, bestLabel:'lower = better' },
-  { key:'nutrientProfile',  label:'Nutrient\nProfile',unit:'%',    higherIsBetter:true,  bestLabel:'avg of both'},
-  { key:'overallRating',    label:'Overall\nRating',   unit:'%',   higherIsBetter:true,  bestLabel:'higher = better'},
-  { key:'justification',    label:'Justification\nfor Rating', unit:'', higherIsBetter:null, noSort:true }
+  { key:'micronutrientRating',label:'Micros',          unit:'%',    higherIsBetter:true,  bestLabel:'higher = better'},
+  { key:'qualityRating',    label:'Quality',          unit:'%',    higherIsBetter:true,  bestLabel:'higher = better'},
+  { key:'overallRating',    label:'Rating',           unit:'%',    higherIsBetter:true,  bestLabel:'higher = better'},
+  { key:'justification',    label:'Notes',            unit:'',     higherIsBetter:null,  noSort:true }
 ];
 
 // ── RANGES FOR BAR SCALING ────────────────────────────────────────────
+const BASE_SERVING_GRAMS = 50;
+const servingSizeInput = document.getElementById('servingSizeInput');
+let servingSizeGrams = BASE_SERVING_GRAMS;
+const servingScaledKeys = new Set(['proteinPerServing', 'caloriesPerServing', 'costPerServing']);
+
 function metricValue(option, key) {
-  if (key === 'nutrientProfile') {
-    return (option.micronutrientRating + option.qualityRating) / 2;
+  const baseValue = option[key];
+  if (servingScaledKeys.has(key)) {
+    return baseValue * (servingSizeGrams / BASE_SERVING_GRAMS);
   }
-  return option[key];
+  return baseValue;
+}
+
+function formatMetricValue(key, val, unit) {
+  if (unit === '₹') return `₹${val.toFixed(1)}`;
+  if (key === 'proteinPerServing') return val.toFixed(1);
+  if (key === 'caloriesPerServing') return Math.round(val);
+  return val;
 }
 
 function getRange(key) {
@@ -913,7 +1032,7 @@ function renderBody() {
         td.className = 'opt-cell';
         td.innerHTML = `
           <div class="opt-label">Opt. ${opt.id}</div>
-          <span class="opt-badge ${opt.winner ? 'badge-winner' : 'badge-runner'}">${opt.winner ? '★ Recommended' : 'Alternative'}</span>
+          <span class="opt-badge ${opt.winner ? 'badge-winner' : 'badge-runner'}">${opt.winner ? '★ Recommended' : opt.badge || 'Alternative'}</span>
         `;
       }
       else if (col.key === 'ingredients') {
@@ -924,36 +1043,18 @@ function renderBody() {
         td.className = 'just-cell';
         td.innerHTML = `<div class="just-text">${opt.justification}</div>`;
       }
-      else if (col.key === 'nutrientProfile') {
-        td.className = 'profile-cell';
-        const micro = opt.micronutrientRating;
-        const quality = opt.qualityRating;
-        const microColor = micro >= 80 ? 'var(--bar-green)' : micro >= 70 ? 'var(--bar-amber)' : 'var(--bar-low)';
-        const qualityColor = quality >= 80 ? 'var(--bar-green)' : quality >= 70 ? 'var(--bar-amber)' : 'var(--bar-low)';
-        td.innerHTML = `
-          <div class="profile-stack">
-            <div class="profile-row">
-              <span class="profile-label">Micros</span>
-              <span class="profile-val" style="color:${microColor}">${micro}%</span>
-              <span class="profile-bar"><span class="profile-fill" style="width:${micro}%;background:${microColor}"></span></span>
-            </div>
-            <div class="profile-row">
-              <span class="profile-label">Quality</span>
-              <span class="profile-val" style="color:${qualityColor}">${quality}%</span>
-              <span class="profile-bar"><span class="profile-fill" style="width:${quality}%;background:${qualityColor}"></span></span>
-            </div>
-          </div>
-        `;
-      }
-      else if (col.key === 'overallRating') {
+      else if (col.key === 'overallRating' || col.key === 'micronutrientRating' || col.key === 'qualityRating') {
         td.className = 'rating-cell';
         const val = opt[col.key];
         const color = val >= 80 ? 'var(--bar-green)' : val >= 70 ? 'var(--bar-amber)' : 'var(--bar-low)';
+        const noteKey = col.key === 'micronutrientRating' ? 'micronutrientNote' : col.key === 'qualityRating' ? 'qualityNote' : null;
+        const noteLabel = col.key === 'micronutrientRating' ? 'Why this score' : col.key === 'qualityRating' ? 'Protein logic' : '';
         td.innerHTML = `
           <div class="rating-ring-wrap">
             ${ringsvg(val, color)}
             <span class="rating-pct" style="color:${color}">${val}%</span>
           </div>
+          ${noteKey ? `<div class="rating-note"><strong>${noteLabel}</strong>${opt[noteKey]}</div>` : ''}
         `;
       }
       else {
@@ -963,7 +1064,7 @@ function renderBody() {
         td.className = `metric-cell${best ? ' val-best' : worst ? ' val-worst' : ''}`;
         const pct = barPct(val, col.key, col.higherIsBetter);
         const bc = barColor(col.key, val, col.higherIsBetter);
-        const displayVal = col.unit === '₹' ? `₹${val}` : val;
+        const displayVal = formatMetricValue(col.key, val, col.unit);
         const unitDisplay = col.unit === '₹' ? '' : col.unit;
         td.innerHTML = `
           <div class="metric-val">${displayVal}<span class="metric-unit">${unitDisplay}</span></div>
@@ -1005,6 +1106,28 @@ function sortBy(colIdx) {
   renderBody();
 }
 
+function applyCurrentSort() {
+  if (!currentSort) {
+    currentData = [...options];
+    renderBody();
+    return;
+  }
+
+  const col = columns[currentSort.colIdx];
+  currentData = [...options].sort((a, b) => {
+    const av = metricValue(a, col.key), bv = metricValue(b, col.key);
+    return currentSort.asc ? av - bv : bv - av;
+  });
+  renderBody();
+}
+
+servingSizeInput.addEventListener('input', () => {
+  const nextValue = Number(servingSizeInput.value);
+  if (!Number.isFinite(nextValue) || nextValue <= 0) return;
+  servingSizeGrams = nextValue;
+  applyCurrentSort();
+});
+
 document.getElementById('resetBtn').addEventListener('click', () => {
   currentSort = null;
   currentData = [...options];
@@ -1017,5 +1140,6 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 renderHeader();
 renderBody();
 </script>
+<script src="site_edit.js"></script>
 </body>
 </html>

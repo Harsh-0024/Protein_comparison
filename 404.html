@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redirecting</title>
+</head>
+<body>
+<script>
+  const path = window.location.pathname;
+  if (/\/blend_comparison\.html\/edit\/?$/.test(path)) {
+    window.location.replace(path.replace(/\/edit\/?$/, '') + '?edit=1');
+  } else if (/\/index\.html\/edit\/?$/.test(path) || /\/edit\/?$/.test(path)) {
+    window.location.replace(path.replace(/(?:index\.html\/)?edit\/?$/, 'index.html') + '?edit=1');
+  } else {
+    document.body.textContent = 'Page not found.';
+  }
+</script>
+</body>
+</html>
