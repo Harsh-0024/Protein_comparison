@@ -259,7 +259,40 @@
   /* TABLE WRAP */
   .table-outer { overflow-x:auto; border-radius:16px; border:1px solid var(--border-strong); box-shadow:0 2px 24px var(--table-shadow); }
 
-  table { width:100%; border-collapse:collapse; min-width:900px; background:var(--surface); }
+  table {
+    width:100%;
+    min-width:1248px;
+    table-layout:fixed;
+    border-collapse:collapse;
+    background:var(--surface);
+  }
+  thead th:nth-child(1),
+  tbody td:nth-child(1) { width:170px; }
+  thead th:nth-child(2),
+  tbody td:nth-child(2) { width:220px; }
+  thead th:nth-child(3),
+  tbody td:nth-child(3),
+  thead th:nth-child(4),
+  tbody td:nth-child(4),
+  thead th:nth-child(5),
+  tbody td:nth-child(5),
+  thead th:nth-child(6),
+  tbody td:nth-child(6) { width:105px; }
+  thead th:nth-child(7),
+  tbody td:nth-child(7),
+  thead th:nth-child(8),
+  tbody td:nth-child(8),
+  thead th:nth-child(9),
+  tbody td:nth-child(9) { width:146px; }
+  thead th:nth-child(1) .th-inner,
+  thead th:nth-child(2) .th-inner {
+    align-items:flex-start;
+    justify-content:center;
+  }
+  thead th:nth-child(1) .th-label,
+  thead th:nth-child(2) .th-label {
+    text-align:left;
+  }
 
   /* HEADER ROW */
   thead tr { border-bottom:2px solid var(--border-strong); }
@@ -270,6 +303,8 @@
   }
   .th-inner {
     display:flex; flex-direction:column;
+    align-items:center;
+    justify-content:center;
     padding:18px 20px 16px;
     cursor:pointer;
     user-select:none;
@@ -282,6 +317,7 @@
   .th-inner:hover { background:var(--surface-hover); }
   .th-inner.sorted { background:var(--green-light); }
   .th-label {
+    text-align:center;
     font-family:'DM Mono',monospace;
     font-size:10px;
     letter-spacing:0.12em;
@@ -308,16 +344,22 @@
 
   /* BODY ROWS */
   tbody tr {
+    height:214px;
     border-bottom:1px solid var(--border);
-    transition:background 0.12s;
+    transition:background 0.12s, box-shadow 0.12s;
     opacity:0;
     transform:translateY(6px);
     animation:rowIn 0.3s forwards;
+    cursor:pointer;
   }
   tbody tr:last-child { border-bottom:none; }
   tbody tr:hover { background:var(--row-hover); }
   tbody tr.is-winner { background:var(--green-light); }
   tbody tr.is-winner:hover { background:var(--winner-hover); }
+  tbody tr.row-expanded {
+    height:330px;
+    box-shadow:inset 3px 0 0 var(--green);
+  }
 
   @keyframes rowIn {
     to { opacity:1; transform:translateY(0); }
@@ -325,11 +367,17 @@
 
   td {
     padding:20px 20px;
-    vertical-align:top;
+    vertical-align:middle;
     border-right:1px solid var(--border);
     font-size:14px;
+    text-align:center;
   }
   td:last-child { border-right:none; }
+  tbody td:nth-child(1),
+  tbody td:nth-child(2) {
+    text-align:left;
+    vertical-align:middle;
+  }
 
   /* OPTION LABEL CELL */
   .opt-cell { min-width:110px; }
@@ -343,6 +391,7 @@
   }
   .opt-badge {
     display:inline-block;
+    max-width:100%;
     font-family:'DM Mono',monospace;
     font-size:9px;
     letter-spacing:0.1em;
@@ -350,6 +399,7 @@
     padding:3px 8px;
     border-radius:4px;
     font-weight:500;
+    white-space:normal;
   }
   .badge-winner { background:var(--green-mid); color:var(--green); border:1px solid var(--green-border); }
   .badge-runner { background:var(--chip-bg); color:var(--muted); border:1px solid var(--border); }
@@ -380,7 +430,7 @@
     color:var(--text);
   }
   .metric-unit { font-size:11px; color:var(--muted); margin-left:2px; }
-  .metric-bar { height:3px; border-radius:999px; margin-top:8px; background:var(--surface2); overflow:hidden; width:80px; }
+  .metric-bar { height:3px; border-radius:999px; margin:8px auto 0; background:var(--surface2); overflow:hidden; width:80px; }
   .metric-bar-fill { height:100%; border-radius:999px; transition:width 0.5s cubic-bezier(.4,0,.2,1); }
 
   .val-best .metric-val { color:var(--green); }
@@ -388,7 +438,7 @@
 
   /* RATING CELL */
   .rating-cell { min-width:100px; }
-  .rating-ring-wrap { display:flex; align-items:center; gap:12px; }
+  .rating-ring-wrap { display:flex; align-items:center; justify-content:center; gap:12px; }
   .ring-svg { flex-shrink:0; }
   .rating-pct {
     font-family:'Playfair Display',serif;
@@ -396,14 +446,20 @@
     font-weight:700;
   }
   .rating-note {
-    margin-top:14px;
+    display:none;
+    margin:14px auto 0;
     max-width:150px;
     color:var(--muted);
     font-size:11px;
     line-height:1.45;
     font-weight:300;
+    text-align:left;
   }
-  .rating-note strong {
+  .row-expanded .rating-note {
+    display:block;
+    min-height:205px;
+  }
+  .rating-note .note-label {
     display:block;
     margin-bottom:3px;
     color:var(--text);
@@ -413,16 +469,10 @@
     letter-spacing:0.08em;
     text-transform:uppercase;
   }
-
-  /* JUSTIFICATION CELL */
-  .just-cell { min-width:240px; max-width:280px; }
-  .just-text {
-    font-size:12.5px;
-    color:var(--muted);
-    line-height:1.65;
-    font-weight:300;
+  .rating-note strong {
+    color:var(--text);
+    font-weight:500;
   }
-  .just-text strong { color:var(--text); font-weight:500; }
 
   .blend-notes {
     display:grid;
@@ -631,8 +681,7 @@
       position:static;
     }
     thead th:nth-child(1),
-    thead th:nth-child(2),
-    thead th:nth-child(10) {
+    thead th:nth-child(2) {
       display:none;
     }
     .th-inner {
@@ -658,6 +707,7 @@
       gap:14px;
     }
     tbody tr {
+      height:auto;
       overflow:hidden;
       border:1px solid var(--border-strong);
       border-radius:14px;
@@ -672,7 +722,7 @@
       display:grid;
       grid-template-columns:104px minmax(0, 1fr);
       gap:12px;
-      align-items:start;
+      align-items:center;
       padding:12px 14px;
       border-right:0;
       border-bottom:1px solid var(--border);
@@ -697,11 +747,9 @@
     td:nth-child(7)::before { content:'Micros'; }
     td:nth-child(8)::before { content:'Quality'; }
     td:nth-child(9)::before { content:'Rating'; }
-    td:nth-child(10)::before { content:'Notes'; }
     .opt-cell,
     .ingredients-cell,
-    .rating-cell,
-    .just-cell {
+    .rating-cell {
       min-width:0;
       max-width:none;
     }
@@ -715,7 +763,7 @@
       white-space:normal;
     }
     .ingredients-cell {
-      align-items:start;
+      align-items:center;
     }
     .ing-item {
       white-space:normal;
@@ -735,14 +783,6 @@
       margin-top:8px;
       font-size:11px;
       line-height:1.45;
-    }
-    .just-cell {
-      grid-template-columns:1fr;
-      gap:6px;
-    }
-    .just-text {
-      font-size:12px;
-      line-height:1.6;
     }
     .blend-notes {
       grid-template-columns:1fr;
@@ -822,12 +862,12 @@
       </ul>
     </div>
     <div class="blend-note">
-      <strong>Batch tip</strong>
-      <p>Grind the full A batch once for about 30 seconds and store it airtight. Hemp, moringa, sesame, and pumpkin distribute evenly, and the shake stays less gritty.</p>
+      <strong>Cost and batch tip</strong>
+      <p>For a 1.2kg monthly batch, A is about ₹332, B is ₹210, and C is ₹204. At 40g/day that works out to roughly ₹11.1, ₹7.0, and ₹6.8 per day. Grind the full A batch once for about 30 seconds and store it airtight.</p>
     </div>
   </div>
 
-  <footer>* Serving metrics scale from the 50g dry-blend baseline. Prices based on Indian bulk/retail market 2025.</footer>
+  <footer>* Serving metrics scale from the 50g dry-blend baseline. Prices updated from June 2026 India local/online sourcing assumptions.</footer>
 </div>
 
 <script>
@@ -871,48 +911,48 @@ const options = [
     winner: true,
     badge: '★ Recommended',
     ingredients: ['Peanut powder 40%','Sattu 20%','Hemp 12%','Flaxseed 8%','Pumpkin seeds 8%','Sesame 7%','Moringa 5%'],
-    proteinPerRupee: 0.97,
+    proteinPerRupee: 1.22,
     proteinPerServing: 16.9,
     caloriesPerServing: 207,
-    costPerServing: 17.5,
+    costPerServing: 13.83,
     micronutrientRating: 85,
     qualityRating: 90,
     overallRating: 92,
-    micronutrientNote: 'Zinc, magnesium, calcium, iron plus trace A/K from moringa. Best spread across 7 sources.',
-    qualityNote: 'Hemp completes the amino profile; sesame adds a second methionine patch.',
-    justification: 'The most complete blend in this analysis. Hemp is the only plant-complete protein here — it fixes the methionine-lysine gap that peanut and sattu share as legumes. Moringa reaches its clinical threshold at 2.5g per serving, making it genuinely effective rather than decorative. Best micro and quality scores by a wide margin. ₹3.9/day more than Option C — fully justified for daily training use. <strong>Make this one.</strong>'
+    micronutrientNote: 'Best micronutrient spread: about 1.35mg zinc, 129mg magnesium, 60mg calcium, and 1.6mg iron per 50g baseline. Hemp, pumpkin, sesame, and moringa contribute together; moringa also adds trace vitamins A/K.',
+    qualityNote: 'Hemp is the only complete protein in this analysis and raises the essential amino acid floor. Sesame adds a second methionine patch, while lower peanut+sattu dependence reduces the shared legume limitation.',
+    justification: 'Best overall because it combines the strongest micro score with the most complete amino profile. The extra ₹4.3/day over C buys hemp, moringa, and better daily-use coverage in one blend.',
   },
   {
     id: 'B',
     winner: false,
     badge: '★ Practical',
     ingredients: ['Peanut powder 55%','Sattu 25%','Flaxseed 10%','Pumpkin seeds 5%','Sesame 5%'],
-    proteinPerRupee: 1.19,
+    proteinPerRupee: 2.09,
     proteinPerServing: 18.3,
     caloriesPerServing: 193,
-    costPerServing: 15.4,
+    costPerServing: 8.75,
     micronutrientRating: 68,
     qualityRating: 80,
     overallRating: 88,
-    micronutrientNote: 'Pumpkin and sesame lift zinc and magnesium; calcium appears for the first time.',
-    qualityNote: 'Sesame targets the methionine gap; pumpkin adds BCAA support.',
-    justification: 'Best choice if moringa\'s mild grassy taste in a cold shake bothers you, or you prefer a simpler 5-ingredient batch to prep. Sesame seeds directly patch the methionine gap that peanut and sattu share as legumes, and add calcium — a rare micro in plant-only blends. Strong amino profile, most cost-efficient among the non-budget options. A genuine daily blend.'
+    micronutrientNote: 'Pumpkin and sesame add roughly 0.38mg zinc and 22mg magnesium over the budget blend. Sesame brings calcium for the first time, lifting the serving to about 98mg magnesium and 38mg calcium.',
+    qualityNote: 'Sesame targets the methionine gap that peanut and sattu both share, making this a true legume + seed pairing. Pumpkin adds BCAA support, so the amino profile is stronger than the 3-ingredient blend.',
+    justification: 'Strong middle ground: close to A on protein quality, clearly better covered than C, and still cheap at about ₹7/day. Best if you want simpler sourcing without moringa or hemp.',
   },
   {
     id: 'C',
     winner: false,
     badge: 'Budget',
     ingredients: ['Peanut powder 60%','Sattu 30%','Flaxseed 10%'],
-    proteinPerRupee: 1.39,
+    proteinPerRupee: 2.22,
     proteinPerServing: 18.9,
     caloriesPerServing: 189,
-    costPerServing: 13.6,
+    costPerServing: 8.5,
     micronutrientRating: 42,
     qualityRating: 70,
     overallRating: 76,
-    micronutrientNote: 'Mostly peanut, sattu, and flax. Some magnesium; weak zinc and almost no calcium.',
-    qualityNote: 'High protein volume, but peanut and sattu share the same methionine/cysteine limit.',
-    justification: 'Wins every single protein and cost metric — cleanest numbers on paper. The tradeoff is real: zero micro support means zinc and magnesium are steadily depleted under heavy training. Quietly degrades testosterone synthesis, sleep quality, and recovery over weeks. Valid only during tight budget months — not as a permanent choice.'
+    micronutrientNote: 'Mostly peanut, sattu, and flax: about 0.67mg zinc, 76mg magnesium, under 15mg calcium, and 1.4mg non-heme iron per 50g baseline. Useful magnesium, but weak zinc and almost no calcium.',
+    qualityNote: 'High protein volume, but peanut and sattu are both legumes and share the same methionine/cysteine limit. Flax adds a little methionine, but 5g is too small to patch 45g of legume-heavy protein.',
+    justification: 'Best pure cost play: highest protein per rupee and lowest daily price. The lower rating comes from weak micros and the shared peanut+sattu amino-acid limitation under daily use.',
   }
 ];
 
@@ -927,8 +967,7 @@ const columns = [
   { key:'costPerServing',   label:'Cost\nper Serving',unit:'₹',    higherIsBetter:false, bestLabel:'lower = better' },
   { key:'micronutrientRating',label:'Micros',          unit:'%',    higherIsBetter:true,  bestLabel:'higher = better'},
   { key:'qualityRating',    label:'Quality',          unit:'%',    higherIsBetter:true,  bestLabel:'higher = better'},
-  { key:'overallRating',    label:'Rating',           unit:'%',    higherIsBetter:true,  bestLabel:'higher = better'},
-  { key:'justification',    label:'Notes',            unit:'',     higherIsBetter:null,  noSort:true }
+  { key:'overallRating',    label:'Rating',           unit:'%',    higherIsBetter:true,  bestLabel:'higher = better'}
 ];
 
 // ── RANGES FOR BAR SCALING ────────────────────────────────────────────
@@ -997,6 +1036,7 @@ function ringsvg(pct, color) {
 // ── RENDER ────────────────────────────────────────────────────────────
 let currentSort = null; // { colIdx, asc }
 let currentData = [...options];
+const expandedRows = new Set();
 
 function renderHeader() {
   const hr = document.getElementById('headerRow');
@@ -1024,7 +1064,18 @@ function renderBody() {
   currentData.forEach((opt, rowI) => {
     const tr = document.createElement('tr');
     if (opt.winner) tr.classList.add('is-winner');
+    if (expandedRows.has(opt.id)) tr.classList.add('row-expanded');
+    tr.tabIndex = 0;
+    tr.setAttribute('aria-expanded', expandedRows.has(opt.id) ? 'true' : 'false');
+    tr.setAttribute('aria-label', `Toggle explanation for Option ${opt.id}`);
     tr.style.animationDelay = (rowI * 0.06) + 's';
+    tr.addEventListener('click', () => toggleRow(opt.id));
+    tr.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        toggleRow(opt.id);
+      }
+    });
 
     columns.forEach((col, colI) => {
       const td = document.createElement('td');
@@ -1040,22 +1091,26 @@ function renderBody() {
         td.className = 'ingredients-cell';
         td.innerHTML = opt.ingredients.map(i => `<span class="ing-item">${i}</span>`).join('');
       }
-      else if (col.key === 'justification') {
-        td.className = 'just-cell';
-        td.innerHTML = `<div class="just-text">${opt.justification}</div>`;
-      }
       else if (col.key === 'overallRating' || col.key === 'micronutrientRating' || col.key === 'qualityRating') {
         td.className = 'rating-cell';
         const val = opt[col.key];
         const color = val >= 80 ? 'var(--bar-green)' : val >= 70 ? 'var(--bar-amber)' : 'var(--bar-low)';
-        const noteKey = col.key === 'micronutrientRating' ? 'micronutrientNote' : col.key === 'qualityRating' ? 'qualityNote' : null;
-        const noteLabel = col.key === 'micronutrientRating' ? 'Why this score' : col.key === 'qualityRating' ? 'Protein logic' : '';
+        const noteKey = col.key === 'micronutrientRating'
+          ? 'micronutrientNote'
+          : col.key === 'qualityRating'
+            ? 'qualityNote'
+            : 'justification';
+        const noteLabel = col.key === 'micronutrientRating'
+          ? 'Why this score'
+          : col.key === 'qualityRating'
+            ? 'Protein logic'
+            : 'Overall logic';
         td.innerHTML = `
           <div class="rating-ring-wrap">
             ${ringsvg(val, color)}
             <span class="rating-pct" style="color:${color}">${val}%</span>
           </div>
-          ${noteKey ? `<div class="rating-note"><strong>${noteLabel}</strong>${opt[noteKey]}</div>` : ''}
+          <div class="rating-note"><strong class="note-label">${noteLabel}</strong>${opt[noteKey]}</div>
         `;
       }
       else {
@@ -1078,6 +1133,15 @@ function renderBody() {
 
     tb.appendChild(tr);
   });
+}
+
+function toggleRow(optionId) {
+  if (expandedRows.has(optionId)) {
+    expandedRows.delete(optionId);
+  } else {
+    expandedRows.add(optionId);
+  }
+  renderBody();
 }
 
 function sortBy(colIdx) {
