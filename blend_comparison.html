@@ -768,7 +768,7 @@
       <div>
         <div class="eyebrow">Protein Blend Analysis · Adjustable Scoop</div>
         <h1>3-Blend Comparison · Built for Daily Use</h1>
-        <p class="subtitle">Serving metrics default to 50g and update with your scoop size. Click any column header to sort best → worst.</p>
+        <p class="subtitle">Serving metrics default to 40g and update with your scoop size. Click any column header to sort best → worst.</p>
       </div>
       <div class="header-actions">
         <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch color theme">Dark mode</button>
@@ -794,7 +794,7 @@
   <div class="controls">
     <label class="serving-control" for="servingSizeInput">
       <span>1 scoop</span>
-      <input id="servingSizeInput" type="number" min="1" max="200" step="1" value="50" inputmode="decimal" aria-label="One scoop size in grams">
+      <input id="servingSizeInput" type="number" min="1" max="200" step="1" value="40" inputmode="decimal" aria-label="One scoop size in grams">
       <span class="serving-unit">g</span>
     </label>
     <button class="reset-btn" id="resetBtn">↺ Reset order</button>
@@ -933,8 +933,9 @@ const columns = [
 
 // ── RANGES FOR BAR SCALING ────────────────────────────────────────────
 const BASE_SERVING_GRAMS = 50;
+const DEFAULT_SERVING_GRAMS = 40;
 const servingSizeInput = document.getElementById('servingSizeInput');
-let servingSizeGrams = BASE_SERVING_GRAMS;
+let servingSizeGrams = DEFAULT_SERVING_GRAMS;
 const servingScaledKeys = new Set(['proteinPerServing', 'caloriesPerServing', 'costPerServing']);
 
 function metricValue(option, key) {
